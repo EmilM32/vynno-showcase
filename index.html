@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#0b1326" />
+		<title>Vynno — Where the hours went.</title>
+		<meta
+			name="description"
+			content="Vynno is a focus timer — projects, sessions, and a clear week. Built with AI agents as a learning exercise, not line by line by hand."
+		/>
+		<meta property="og:title" content="Vynno — Where the hours went." />
+		<meta
+			property="og:description"
+			content="A focus timer built with AI agents as a learning exercise. Source on GitHub."
+		/>
+		<meta property="og:type" content="website" />
+		<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+		<link
+			rel="preload"
+			href="./assets/fonts/inter-latin.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link
+			rel="preload"
+			href="./assets/fonts/jetbrains-mono-latin.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
+		<link rel="stylesheet" href="./styles.css" />
+		<script>
+			document.documentElement.classList.remove('no-js');
+		</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+
+		<header class="top">
+			<div class="wrap top-inner">
+				<a class="brand" href="#main">
+					<svg class="mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+						<path
+							d="M25.33 23.55A12 12 0 1 1 25.33 8.45L21.6 11.47A7.2 7.2 0 1 0 21.6 20.53Z"
+						/>
+						<path d="M21.45 11.3L29.2 16L21.45 20.7L24.4 16Z" />
+					</svg>
+					<span class="wordmark" translate="no">Vynno</span>
+				</a>
+				<a class="btn btn-primary press" href="https://github.com/EmilM32/vynno"
+					>View on GitHub</a
+				>
+			</div>
+		</header>
+
+		<main id="main">
+			<section class="hero wrap" aria-labelledby="hero-title">
+				<div class="hero-copy">
+					<p class="eyebrow">
+						<span class="mono">method</span>
+						Built with AI agents — a learning exercise
+					</p>
+					<h1 id="hero-title" class="hero-title">Where the hours went.</h1>
+					<p class="lede">
+						<span translate="no">Vynno</span> is a focus timer — projects, sessions, and a
+						clear week. I did not write every line by hand.
+					</p>
+					<div class="hero-actions">
+						<a class="btn btn-primary press" href="https://github.com/EmilM32/vynno"
+							>View on GitHub</a
+						>
+						<a class="text-link" href="https://github.com/EmilM32/vynno-api">API repo</a>
+					</div>
+					<p class="status">
+						<span class="mono">status</span>
+						Local production. Not a hosted app. Source is public.
+					</p>
+				</div>
+
+				<figure class="product">
+					<div class="product-chrome" aria-hidden="true">
+						<aside class="rail">
+							<div class="rail-brand">
+								<svg class="mark sm" viewBox="0 0 32 32" fill="currentColor">
+									<path
+										d="M25.33 23.55A12 12 0 1 1 25.33 8.45L21.6 11.47A7.2 7.2 0 1 0 21.6 20.53Z"
+									/>
+									<path d="M21.45 11.3L29.2 16L21.45 20.7L24.4 16Z" />
+								</svg>
+								<span translate="no">Vynno</span>
+							</div>
+							<nav class="rail-nav">
+								<span>Timer</span>
+								<span class="muted">Dashboard</span>
+								<span class="muted">Logs</span>
+								<span class="muted">Insights</span>
+								<span class="muted">Projects</span>
+							</nav>
+							<div class="rail-chip">
+								<span class="dot live"></span>
+								<span class="mono">01:14:32</span>
+							</div>
+						</aside>
+						<div class="stage">
+							<p class="stage-kicker">Timer</p>
+							<div class="timer-card pulse-border">
+								<p class="clock tabular" id="elapsed">01:14:32</p>
+								<p class="timer-meta">
+									<span class="dot live"></span>
+									<span class="mono live-ink">ACTIVE</span>
+									<span class="sep">·</span>
+									<span class="mono primary-ink">PROJ VYNN</span>
+								</p>
+								<p class="timer-note">Rewrite auth session cookie</p>
+								<div class="transport">
+									<span class="fake-btn">Pause</span>
+									<span class="fake-btn primary">Stop</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<figcaption>
+						The product, not a mockup kit: one active session, a monospaced clock, IDE density.
+					</figcaption>
+				</figure>
+			</section>
+
+			<section class="method wrap" aria-labelledby="method-title">
+				<p class="kicker mono">how it was made</p>
+				<h2 id="method-title">Agents write. I review. The product still has to work.</h2>
+				<p class="section-lede">
+					<span translate="no">Vynno</span> is a daily-driver focus timer and a lab for working
+					with AI. Two goals, side by side: something I will actually use, and a clearer sense of
+					what to delegate, what to read, and how to keep a product coherent.
+				</p>
+				<ol class="steps">
+					<li>
+						<p class="step-n mono">01 plan</p>
+						<p>
+							Agents help shape the work. I decide what ships. Design tokens, brand, and the
+							session model stay human decisions.
+						</p>
+					</li>
+					<li>
+						<p class="step-n mono">02 implement</p>
+						<p>
+							Agents write most of the code. The stack does not change for convenience:
+							SvelteKit, TypeScript, the same dark IDE chrome.
+						</p>
+					</li>
+					<li>
+						<p class="step-n mono">03 review</p>
+						<p>
+							I read the diff. If it would not survive a workday on the timer, it does not
+							land. Agent output is held to the same rules as everything else.
+						</p>
+					</li>
+				</ol>
+			</section>
+
+			<section class="tour wrap" aria-labelledby="tour-title">
+				<p class="kicker mono">the product</p>
+				<h2 id="tour-title">A week you can read</h2>
+				<p class="section-lede">
+					Keyboard-first. High density. One session at a time. Built to answer a simple
+					question: where did the hours go.
+				</p>
+				<ul class="routes">
+					<li>
+						<code class="path">/timer</code>
+						<p>One active session. Start, pause, stop. The clock is the point.</p>
+					</li>
+					<li>
+						<code class="path">/dashboard</code>
+						<p>Today’s total, current focus, the week in bars.</p>
+					</li>
+					<li>
+						<code class="path">/logs</code>
+						<p>Every stopped session, searchable, editable.</p>
+					</li>
+					<li>
+						<code class="path">/insights</code>
+						<p>Time by project and activity, week or month.</p>
+					</li>
+					<li>
+						<code class="path">/projects</code>
+						<p>Named work with a color. Drill into one project’s hours.</p>
+					</li>
+				</ul>
+			</section>
+
+			<section class="stack wrap" aria-labelledby="stack-title">
+				<p class="kicker mono">stack</p>
+				<h2 id="stack-title">Frontend and API are separate repositories</h2>
+				<p class="section-lede">
+					The UI talks to <span translate="no">vynno-api</span> over HTTP with a session cookie.
+					I run production on this machine. Native desktop is a second target, not the daily
+					driver.
+				</p>
+				<ul class="chips">
+					<li>SvelteKit</li>
+					<li>TypeScript</li>
+					<li>Tailwind CSS</li>
+					<li>Paraglide i18n</li>
+					<li>companion API</li>
+				</ul>
+			</section>
+		</main>
+
+		<footer class="foot">
+			<div class="wrap foot-inner">
+				<p>
+					<span class="wordmark" translate="no">Vynno</span>
+					<span class="mono muted"> — VIN-oh</span>
+				</p>
+				<p class="foot-links">
+					<a href="https://github.com/EmilM32/vynno">GitHub</a>
+					<a href="https://github.com/EmilM32/vynno-api">API</a>
+					<a href="https://github.com/EmilM32/vynno/blob/main/docs/brand.md">Brand</a>
+				</p>
+			</div>
+		</footer>
+
+		<script src="./script.js" defer></script>
+	</body>
+</html>

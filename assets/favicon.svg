@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Vynno">
+	<title>Vynno</title>
+	<style>
+		.tile {
+			fill: #0b1326;
+		}
+		.mark {
+			fill: #8ed5ff;
+		}
+		@media (prefers-color-scheme: light) {
+			.tile {
+				fill: #f8f9ff;
+			}
+			.mark {
+				fill: #006194;
+			}
+		}
+	</style>
+	<rect class="tile" width="32" height="32" rx="6" />
+	<!-- Same mark as logo-mark.svg / BrandMark.svelte -->
+	<path class="mark" d="M25.33 23.55A12 12 0 1 1 25.33 8.45L21.6 11.47A7.2 7.2 0 1 0 21.6 20.53Z" />
+	<path class="mark" d="M21.45 11.3L29.2 16L21.45 20.7L24.4 16Z" />
+</svg>
