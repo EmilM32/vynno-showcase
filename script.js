@@ -1,26 +1,132 @@
 (() => {
-	const clock = document.getElementById('elapsed');
-	const railChip = document.querySelector('.rail-chip .mono');
-	if (!clock) return;
-
-	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-	if (reduced) return;
-
-	const [h, m, s] = clock.textContent.split(':').map((n) => Number.parseInt(n, 10));
-	let seconds = h * 3600 + m * 60 + s;
-
 	const pad = (n) => String(n).padStart(2, '0');
-	const render = () => {
-		const hh = pad(Math.floor(seconds / 3600));
-		const mm = pad(Math.floor((seconds % 3600) / 60));
-		const ss = pad(seconds % 60);
-		const label = `${hh}:${mm}:${ss}`;
-		clock.textContent = label;
-		if (railChip) railChip.textContent = label;
+
+	const runClock = () => {
+		const clock = document.getElementById('elapsed');
+		const railChip = document.querySelector('.rail-chip .mono');
+		if (!clock) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const [h, m, s] = clock.textContent.split(':').map((n) => Number.parseInt(n, 10));
+		let seconds = h * 3600 + m * 60 + s;
+
+		const render = () => {
+			const label = `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor((seconds % 3600) / 60))}:${pad(seconds % 60)}`;
+			clock.textContent = label;
+			if (railChip) railChip.textContent = label;
+		};
+
+		window.setInterval(() => {
+			seconds += 1;
+			render();
+		}, 1000);
 	};
 
-	window.setInterval(() => {
-		seconds += 1;
-		render();
-	}, 1000);
+	const copyFromTemplate = (template, attr, key) => {
+		if (!template) return null;
+		return template.content.querySelector(`[${attr}="${key}"]`);
+	};
+
+	const bindSwitcher = ({ root, buttons, attr, template, kicker, panel }) => {
+		if (!root || !buttons.length || !panel || !kicker) return;
+
+		const apply = (btn) => {
+			const key = btn.getAttribute(attr);
+			buttons.forEach((node) => {
+				node.setAttribute('aria-pressed', node === btn ? 'true' : 'false');
+			});
+			const source = copyFromTemplate(template, attr, key);
+			kicker.textContent = key;
+			const next = source ? source.cloneNode(true) : document.createElement('p');
+			if (!source) next.textContent = key;
+			const old = panel.querySelector('p:not(.topo-detail-kicker)');
+			if (old) old.replaceWith(next);
+			else panel.append(next);
+		};
+
+		buttons.forEach((btn) => {
+			btn.addEventListener('click', () => apply(btn));
+		});
+	};
+
+	const runTopology = () => {
+		const root = document.querySelector('.topo');
+		bindSwitcher({
+			root,
+			buttons: [...document.querySelectorAll('.topo-node')],
+			attr: 'data-node',
+			template: document.getElementById('topo-copy'),
+			kicker: document.querySelector('#topo-detail .topo-detail-kicker'),
+			panel: document.getElementById('topo-detail'),
+		});
+	};
+
+	const runLifecycle = () => {
+		const root = document.querySelector('.life-card');
+		bindSwitcher({
+			root,
+			buttons: [...document.querySelectorAll('.life-state')],
+			attr: 'data-state',
+			template: document.getElementById('life-copy'),
+			kicker: document.querySelector('#life-detail .topo-detail-kicker'),
+			panel: document.getElementById('life-detail'),
+		});
+	};
+
+	const runAdrFilter = () => {
+		const buttons = [...document.querySelectorAll('.filter-btn')];
+		const cards = [...document.querySelectorAll('.adr')];
+		if (!buttons.length) return;
+
+		const apply = (side) => {
+			buttons.forEach((btn) => {
+				btn.setAttribute('aria-pressed', btn.dataset.filter === side ? 'true' : 'false');
+			});
+			cards.forEach((card) => {
+				const sides = card.dataset.side.split(/\s+/);
+				card.hidden = side !== 'all' && !sides.includes(side);
+			});
+		};
+
+		buttons.forEach((btn) => {
+			btn.addEventListener('click', () => apply(btn.dataset.filter));
+		});
+	};
+
+	const runNav = () => {
+		const links = [...document.querySelectorAll('.site-nav a')];
+		const header = document.querySelector('.top');
+		const sections = links.map((link) => document.querySelector(link.hash)).filter(Boolean);
+		if (!sections.length) return;
+
+		const setCurrent = (id) => {
+			links.forEach((link) => {
+				if (link.hash === `#${id}`) link.setAttribute('aria-current', 'location');
+				else link.removeAttribute('aria-current');
+			});
+		};
+
+		const update = () => {
+			const offset = (header ? header.getBoundingClientRect().bottom : 0) + 72;
+			let current = sections[0].id;
+			for (const section of sections) {
+				if (section.getBoundingClientRect().top <= offset) current = section.id;
+			}
+			const atEnd =
+				window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+			if (atEnd) current = sections.at(-1).id;
+			setCurrent(current);
+		};
+
+		update();
+		requestAnimationFrame(update);
+		window.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('hashchange', update);
+	};
+
+	runClock();
+	runTopology();
+	runLifecycle();
+	runAdrFilter();
+	runNav();
 })();
