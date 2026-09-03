@@ -15,5 +15,4 @@ Also check the GitHub Pages subpath: assets use relative URLs (`./styles.css`), 
 ## Deploy
 
 Push `main`. GitHub Actions publishes via `.github/workflows/pages.yml`.
-
-In the repo: **Settings → Pages → Source: GitHub Actions**.
+The workflow enables GitHub Pages automatically if it has not been configured yet.
