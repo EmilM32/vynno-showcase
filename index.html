@@ -87,49 +87,17 @@
 				</div>
 
 				<figure class="product">
-					<div class="product-chrome" aria-hidden="true">
-						<aside class="rail">
-							<div class="rail-brand">
-								<svg class="mark sm" viewBox="0 0 32 32" fill="currentColor">
-									<path
-										d="M25.33 23.55A12 12 0 1 1 25.33 8.45L21.6 11.47A7.2 7.2 0 1 0 21.6 20.53Z"
-									/>
-									<path d="M21.45 11.3L29.2 16L21.45 20.7L24.4 16Z" />
-								</svg>
-								<span translate="no">Vynno</span>
-							</div>
-							<nav class="rail-nav">
-								<span>Timer</span>
-								<span class="muted">Dashboard</span>
-								<span class="muted">Logs</span>
-								<span class="muted">Insights</span>
-								<span class="muted">Projects</span>
-							</nav>
-							<div class="rail-chip">
-								<span class="dot live"></span>
-								<span class="mono">01:14:32</span>
-							</div>
-						</aside>
-						<div class="stage">
-							<p class="stage-kicker">Timer</p>
-							<div class="timer-card pulse-border">
-								<p class="clock tabular" id="elapsed">01:14:32</p>
-								<p class="timer-meta">
-									<span class="dot live"></span>
-									<span class="mono live-ink">ACTIVE</span>
-									<span class="sep">·</span>
-									<span class="mono primary-ink">PROJ VYNN</span>
-								</p>
-								<p class="timer-note">Rewrite auth session cookie</p>
-								<div class="transport">
-									<span class="fake-btn">Pause</span>
-									<span class="fake-btn primary">Stop</span>
-								</div>
-							</div>
-						</div>
+					<div class="product-frame">
+						<img
+							src="./assets/screens/timer.webp"
+							width="1440"
+							height="900"
+							alt="Vynno timer: a paused Research session, monospaced clock at 40:34:14, and recent tasks."
+							fetchpriority="high"
+						/>
 					</div>
 					<figcaption>
-						The product, not a mockup kit: one active session, a monospaced clock, IDE density.
+						Live capture of the daily driver — paused session, monospaced clock, IDE density.
 					</figcaption>
 				</figure>
 			</section>
@@ -174,30 +142,102 @@
 					Keyboard-first. High density. One session at a time. Built to answer a simple
 					question: where did the hours go.
 				</p>
-				<ul class="routes">
+				<ul class="shots">
 					<li>
-						<code class="path">/timer</code>
-						<p>One active session. Start, pause, stop. The clock is the point.</p>
+						<figure class="shot">
+							<img
+								src="./assets/screens/timer.webp"
+								width="1440"
+								height="900"
+								alt="Timer screen with a paused session clock and recent tasks."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/timer</code>
+								<p>One active session. Start, pause, stop. The clock is the point.</p>
+							</figcaption>
+						</figure>
 					</li>
 					<li>
-						<code class="path">/dashboard</code>
-						<p>Today’s total, current focus, the week in bars.</p>
+						<figure class="shot">
+							<img
+								src="./assets/screens/dashboard.webp"
+								width="1440"
+								height="900"
+								alt="Dashboard with today’s total, current focus, and a week of hour bars."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/dashboard</code>
+								<p>Today’s total, current focus, the week in bars.</p>
+							</figcaption>
+						</figure>
 					</li>
 					<li>
-						<code class="path">/logs</code>
-						<p>Every stopped session, searchable, editable.</p>
+						<figure class="shot">
+							<img
+								src="./assets/screens/logs.webp"
+								width="1440"
+								height="900"
+								alt="Logs list of stopped sessions grouped by day, with search and add entry."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/logs</code>
+								<p>Every stopped session, searchable, editable.</p>
+							</figcaption>
+						</figure>
 					</li>
 					<li>
-						<code class="path">/insights</code>
-						<p>Time by project and activity, week or month.</p>
+						<figure class="shot">
+							<img
+								src="./assets/screens/insights.webp"
+								width="1440"
+								height="900"
+								alt="Insights week view with totals and time by project and activity."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/insights</code>
+								<p>Time by project and activity, week or month.</p>
+							</figcaption>
+						</figure>
 					</li>
 					<li>
-						<code class="path">/projects</code>
-						<p>Named work with a color. Drill into one project’s hours.</p>
+						<figure class="shot">
+							<img
+								src="./assets/screens/projects.webp"
+								width="1440"
+								height="900"
+								alt="Projects list with color chips, codes, and session counts."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/projects</code>
+								<p>Named work with a color. Drill into one project’s hours.</p>
+							</figcaption>
+						</figure>
 					</li>
 					<li>
-						<code class="path">/settings</code>
-						<p>Profile, language, named themes, activity types.</p>
+						<figure class="shot">
+							<img
+								src="./assets/screens/settings.webp"
+								width="1440"
+								height="900"
+								alt="Settings with profile, activity types, and device preferences."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/settings</code>
+								<p>Profile, language, named themes, activity types.</p>
+							</figcaption>
+						</figure>
 					</li>
 				</ul>
 			</section>

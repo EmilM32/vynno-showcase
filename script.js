@@ -1,27 +1,4 @@
 (() => {
-	const pad = (n) => String(n).padStart(2, '0');
-
-	const runClock = () => {
-		const clock = document.getElementById('elapsed');
-		const railChip = document.querySelector('.rail-chip .mono');
-		if (!clock) return;
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-		const [h, m, s] = clock.textContent.split(':').map((n) => Number.parseInt(n, 10));
-		let seconds = h * 3600 + m * 60 + s;
-
-		const render = () => {
-			const label = `${pad(Math.floor(seconds / 3600))}:${pad(Math.floor((seconds % 3600) / 60))}:${pad(seconds % 60)}`;
-			clock.textContent = label;
-			if (railChip) railChip.textContent = label;
-		};
-
-		window.setInterval(() => {
-			seconds += 1;
-			render();
-		}, 1000);
-	};
-
 	const copyFromTemplate = (template, attr, key) => {
 		if (!template) return null;
 		return template.content.querySelector(`[${attr}="${key}"]`);
@@ -124,7 +101,6 @@
 		window.addEventListener('hashchange', update);
 	};
 
-	runClock();
 	runTopology();
 	runLifecycle();
 	runAdrFilter();
