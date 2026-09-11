@@ -4,7 +4,7 @@ Static GitHub Pages site for **Vynno** — a focus timer built with AI agents as
 
 Product: [EmilM32/vynno](https://github.com/EmilM32/vynno) · API: [EmilM32/vynno-api](https://github.com/EmilM32/vynno-api)
 
-Living docs stay in those repos (`docs/`, `docs/adr/`, [working agreement](https://github.com/EmilM32/vynno-api/blob/main/docs/working-agreement.md)). This site is a snapshot with diagrams, not a copy of the markdown.
+Living docs stay in those repos (`docs/`, `docs/adr/`, [working agreement](https://github.com/EmilM32/vynno-api/blob/main/docs/working-agreement.md)). This site is a snapshot with diagrams, not a copy of the markdown. Screenshots are English/dark captures of the playground seed on current `main`.
 
 ## Local preview
 

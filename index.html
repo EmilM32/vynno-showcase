@@ -92,12 +92,12 @@
 							src="./assets/screens/timer.webp"
 							width="1440"
 							height="900"
-							alt="Vynno timer: a paused Research session, monospaced clock at 40:34:14, and recent tasks."
+							alt="Vynno timer: an active Identity session, monospaced clock, Start/Stop only, and recent tasks."
 							fetchpriority="high"
 						/>
 					</div>
 					<figcaption>
-						Live capture of the daily driver — paused session, monospaced clock, IDE density.
+						Live capture of the daily driver — active session, monospaced clock, IDE density.
 					</figcaption>
 				</figure>
 			</section>
@@ -149,13 +149,13 @@
 								src="./assets/screens/timer.webp"
 								width="1440"
 								height="900"
-								alt="Timer screen with a paused session clock and recent tasks."
+								alt="Timer screen with an active session clock and recent tasks."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/timer</code>
-								<p>One active session. Start, pause, stop. The clock is the point.</p>
+								<p>One active session. Start or stop. A break is a new session.</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -165,7 +165,7 @@
 								src="./assets/screens/dashboard.webp"
 								width="1440"
 								height="900"
-								alt="Dashboard with today’s total, current focus, and a week of hour bars."
+								alt="Dashboard with today’s total, an active current focus, and a week of hour bars."
 								loading="lazy"
 								decoding="async"
 							/>
@@ -181,13 +181,29 @@
 								src="./assets/screens/logs.webp"
 								width="1440"
 								height="900"
-								alt="Logs list of stopped sessions grouped by day, with search and add entry."
+								alt="Logs list with date, project, and activity filters, Entries layout, and an in-progress row."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/logs</code>
-								<p>Every stopped session, searchable, editable.</p>
+								<p>Search, date and facet filters, edit or add an entry.</p>
+							</figcaption>
+						</figure>
+					</li>
+					<li>
+						<figure class="shot">
+							<img
+								src="./assets/screens/logs-grouped.webp"
+								width="1440"
+								height="900"
+								alt="Logs grouped layout summing same-ticket sessions in a day with an n× count."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/logs</code>
+								<p>Grouped layout: same ticket in a day becomes one total.</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -197,13 +213,13 @@
 								src="./assets/screens/insights.webp"
 								width="1440"
 								height="900"
-								alt="Insights week view with totals and time by project and activity."
+								alt="Insights with a visible week range, project donut, and time by activity."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/insights</code>
-								<p>Time by project and activity, week or month.</p>
+								<p>Time by project and activity. Week, 2 weeks, month, or custom.</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -213,13 +229,29 @@
 								src="./assets/screens/projects.webp"
 								width="1440"
 								height="900"
-								alt="Projects list with color chips, codes, and session counts."
+								alt="Projects list with color chips, codes, session counts, and Active/Archived tabs."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/projects</code>
-								<p>Named work with a color. Drill into one project’s hours.</p>
+								<p>Named work with a color. Rows open the project dossier.</p>
+							</figcaption>
+						</figure>
+					</li>
+					<li>
+						<figure class="shot">
+							<img
+								src="./assets/screens/project.webp"
+								width="1440"
+								height="900"
+								alt="Project dossier for Identity with KPIs, week bars, activity split, and entries."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/projects/[id]</code>
+								<p>One project’s hours, period, and entries.</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -271,7 +303,7 @@
 								<button type="button" class="topo-node" data-node="browser" aria-pressed="true">
 									<span class="topo-kicker mono">client</span>
 									<span class="topo-name">Browser</span>
-									<span class="topo-meta mono">vynno.local</span>
+									<span class="topo-meta mono">vynno.localhost</span>
 								</button>
 							</li>
 							<li aria-hidden="true" class="topo-arrow">→</li>
@@ -345,7 +377,7 @@
 						<div class="topo-detail" id="topo-detail" role="status">
 							<p class="topo-detail-kicker mono">browser</p>
 							<p>
-								Daily URL is <code class="path">https://vynno.local</code>. That origin,
+								Daily URL is <code class="path">https://vynno.localhost</code>. That origin,
 								<code class="path">:27180</code>, and <code class="path">127.0.0.1</code> do
 								not share the session cookie. Bookmark the hostname, not the port.
 							</p>
@@ -369,7 +401,8 @@
 								<li>
 									<span class="layer-name">routes</span>
 									<span class="layer-meta"
-										>/timer · /dashboard · /logs · /insights · /projects · /settings</span
+										>/timer · /dashboard · /logs · /insights · /projects · /projects/[id] ·
+										/settings</span
 									>
 								</li>
 								<li>
@@ -437,7 +470,7 @@
 					<p class="block-lede" id="life-caption">
 						One user, isolated. No teams. At most one live session. A second start is
 						<code class="path">409 session_already_active</code> — the server does not
-						auto-stop. Select a state.
+						auto-stop. A break is stop, then start. Select a state.
 					</p>
 					<div class="domain-grid">
 						<div class="tree-card">
@@ -460,7 +493,7 @@
 										</li>
 										<li>
 											<span class="tree-node">TimeSession*</span>
-											<span class="tree-note">note, tags, timestamps, pausedMs</span>
+											<span class="tree-note">note, ticket, timestamps; active or stopped</span>
 										</li>
 									</ul>
 								</li>
@@ -486,14 +519,6 @@
 								<button type="button" class="life-state on" data-state="active" aria-pressed="true">
 									<span class="mono">active</span>
 								</button>
-								<span class="life-loop" aria-hidden="true">
-									<span>pause</span>
-									<span class="life-arrow">⇄</span>
-									<span>resume</span>
-								</span>
-								<button type="button" class="life-state" data-state="paused" aria-pressed="false">
-									<span class="mono">paused</span>
-								</button>
 								<span class="life-edge" aria-hidden="true"
 									>stop<span class="life-arrow">→</span></span
 								>
@@ -504,8 +529,8 @@
 							<div class="life-detail" id="life-detail" role="status">
 								<p class="topo-detail-kicker mono">active</p>
 								<p>
-									Elapsed is <code class="path">now − startedAt − pausedMs</code>. Pause and
-									Stop are the only verbs. Status is never patched.
+									Elapsed is <code class="path">now − startedAt</code>. Stop is the only live
+									verb. Status is never patched.
 								</p>
 							</div>
 						</div>
@@ -651,8 +676,8 @@
 				<article class="block" aria-labelledby="road-title">
 					<h3 id="road-title">Roadmap</h3>
 					<p class="block-lede">
-						API phases 0–4 shipped, then a stretch of contract work on the same host. Phase 5
-						is later, and only via a contract amendment.
+						API phases 0–4 shipped, then profile, seed, activity types, session mutate, mail,
+						and Swagger on the same host. Phase 5 is later, and only via a contract amendment.
 					</p>
 					<ol class="phases" aria-label="API phases">
 						<li class="done">
@@ -682,23 +707,24 @@
 					</ol>
 					<div class="road-split">
 						<div>
-							<p class="mono tree-kicker">after phase 4</p>
+							<p class="mono tree-kicker">shipped after phase 4</p>
 							<ul class="road-list">
 								<li>Profile and avatar</li>
 								<li>Playground seed / reset on <code class="path">vynno_dev</code></li>
 								<li>User-defined activity types</li>
 								<li>Session edit, delete, manual entry</li>
+								<li>Logs filters and grouped layout; project dossier</li>
 								<li>Cursor pagination, email login, outbound mail, Swagger</li>
 							</ul>
 						</div>
 						<div>
-							<p class="mono tree-kicker">phase 5 / open</p>
+							<p class="mono tree-kicker">later / open</p>
 							<ul class="road-list dim">
 								<li>Prefs persistence</li>
 								<li>Insights aggregation endpoints</li>
+								<li>Session target UI, richer ⌘K</li>
 								<li>Multi-user workspaces</li>
 								<li>OAuth / 2FA / change-email</li>
-								<li>Timer target UI, richer ⌘K, Tauri as a second target</li>
 							</ul>
 						</div>
 					</div>
@@ -826,10 +852,10 @@
 							<div class="adr-body">
 								<p>
 									Daily driver is this machine: Caddy on
-									<code class="path">vynno.local</code>, adapter-node, compiled API, Compose
+									<code class="path">vynno.localhost</code>, adapter-node, compiled API, Compose
 									Postgres. Availability is “the laptop is on.”
 								</p>
-								<p class="caption">A public host would be a new ADR, not a silent deploy.</p>
+								<p class="caption">A public host would be a new ADR, not a silent deploy. Native desktop (Tauri) is not a target.</p>
 								<p class="caption">
 									<a
 										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0014-local-production-spa.md"
@@ -838,6 +864,91 @@
 									·
 									<a
 										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0011-local-production-host.md"
+										>API</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0021</span>
+								<span class="adr-title">Insights uses an explicit civil range</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Week, 2 weeks, month, or custom From–To. Prev/next shift the grain. Range is
+									view-local — leaving the screen resets to this week.
+								</p>
+								<p class="caption">No API date filter; the client pages until the window start.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0021-insights-range.md"
+										>ADR-0021</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0022</span>
+								<span class="adr-title">Logs list filters</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Date presets plus custom, multi-select projects and activities. Empty
+									selection means all. Combined with search by AND.
+								</p>
+								<p class="caption">View-local. The project dossier reuses the activity facet.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0022-logs-filters.md"
+										>ADR-0022</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0023</span>
+								<span class="adr-title">Logs grouped-by-task layout</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Entries stays the default. Grouped merges same-ticket (else same project +
+									note) sessions inside a day, with count and total duration.
+								</p>
+								<p class="caption">No API change. Expand a summary to the constituent rows.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0023-logs-grouped-view.md"
+										>ADR-0023</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend api">
+							<summary>
+								<span class="adr-id mono">FE 0024 · API 0005</span>
+								<span class="adr-title">Session is a continuous interval</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Status is <code class="path">active | stopped</code>. Verbs are start and
+									stop. A break is stop, then start a new session. Duration is wall-clock.
+								</p>
+								<p class="caption">No paused live state, no <code class="path">pausedMs</code>.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0024-session-continuous-interval.md"
+										>Frontend</a
+									>
+									·
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0005-session-lifecycle.md"
 										>API</a
 									>
 								</p>
@@ -893,11 +1004,11 @@
 							</summary>
 							<div class="adr-body">
 								<p>
-									At most one <code class="path">active</code> or
-									<code class="path">paused</code> row. Pause / resume / stop are POSTs.
-									Stopped sessions later became mutable (edit, delete, manual entry).
+									At most one <code class="path">active</code> row. A session is a continuous
+									interval; stop is the only live verb. Stopped rows are mutable (edit, delete,
+									manual entry).
 								</p>
-								<p class="caption">Do not auto-stop. Do not PATCH status.</p>
+								<p class="caption">Do not auto-stop. Do not PATCH status. No pause.</p>
 								<p class="caption">
 									<a
 										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0005-session-lifecycle.md"
@@ -980,7 +1091,7 @@
 
 		<template id="topo-copy">
 			<p data-node="browser">
-				Daily URL is <code class="path">https://vynno.local</code>. That origin,
+				Daily URL is <code class="path">https://vynno.localhost</code>. That origin,
 				<code class="path">:27180</code>, and <code class="path">127.0.0.1</code> do not share
 				the session cookie. Bookmark the hostname, not the port.
 			</p>
@@ -1026,16 +1137,12 @@
 				ready to start.
 			</p>
 			<p data-state="active">
-				Elapsed is <code class="path">now − startedAt − pausedMs</code>. Pause and Stop are the
-				only verbs. Status is never patched.
-			</p>
-			<p data-state="paused">
-				Clock is frozen. Resume folds <code class="path">now − pausedAt</code> into
-				<code class="path">pausedMs</code>. Stop applies the same accounting first.
+				Elapsed is <code class="path">now − startedAt</code>. Stop is the only live verb. Status
+				is never patched.
 			</p>
 			<p data-state="stopped">
 				Log entry. Restart is a new <code class="path">POST /sessions</code>, never a mutate of
-				this row back to live. Edit and delete are allowed.
+				this row back to live. Edit and delete are allowed. A break is stop, then start.
 			</p>
 		</template>
 
