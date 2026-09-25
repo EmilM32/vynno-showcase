@@ -30,11 +30,23 @@
 		const root = document.querySelector('.topo');
 		bindSwitcher({
 			root,
-			buttons: [...document.querySelectorAll('.topo-node')],
+			buttons: [...(root ? root.querySelectorAll('.topo-node') : [])],
 			attr: 'data-node',
 			template: document.getElementById('topo-copy'),
 			kicker: document.querySelector('#topo-detail .topo-detail-kicker'),
 			panel: document.getElementById('topo-detail'),
+		});
+	};
+
+	const runTools = () => {
+		const root = document.getElementById('tool-card');
+		bindSwitcher({
+			root,
+			buttons: [...(root ? root.querySelectorAll('.tool-btn') : [])],
+			attr: 'data-tool',
+			template: document.getElementById('tool-copy'),
+			kicker: document.querySelector('#tool-detail .topo-detail-kicker'),
+			panel: document.getElementById('tool-detail'),
 		});
 	};
 
@@ -102,6 +114,7 @@
 	};
 
 	runTopology();
+	runTools();
 	runLifecycle();
 	runAdrFilter();
 	runNav();

@@ -1,6 +1,6 @@
 # vynno-showcase
 
-Static GitHub Pages site for **Vynno** — a focus timer built with AI agents as a learning exercise. The page covers the product, the frontend/API architecture, and the write-first process (PRD, ADRs, contract, plans).
+Static GitHub Pages site for **Vynno** — a focus timer built with AI agents as a learning exercise. The page covers the product, the frontend/API architecture, the local MCP an agent uses to read one account’s history, and the write-first process (PRD, ADRs, contract, plans).
 
 Product: [EmilM32/vynno](https://github.com/EmilM32/vynno) · API: [EmilM32/vynno-api](https://github.com/EmilM32/vynno-api)
 
