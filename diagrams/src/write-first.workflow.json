@@ -1,0 +1,223 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Write first, then build",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "happy-path",
+        "label": "Need to shipped",
+        "focus": [
+          "need",
+          "pick",
+          "implement",
+          "review",
+          "true",
+          "delete"
+        ],
+        "note": "Pick the document the change belongs in, build, then keep the docs true."
+      },
+      {
+        "id": "review-gate",
+        "label": "Review gate",
+        "focus": [
+          "implement",
+          "review"
+        ],
+        "note": "If it would not survive a workday on the timer, it goes back."
+      }
+    ],
+    "legend": {
+      "entries": {
+        "backend": {
+          "label": "Agent work"
+        },
+        "security": {
+          "label": "Human gate"
+        },
+        "messagebus": {
+          "label": "Cleanup"
+        },
+        "database": {
+          "label": "Canonical docs"
+        },
+        "external": {
+          "label": "Input"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "human",
+      "label": "Human"
+    },
+    {
+      "id": "docs",
+      "label": "Docs (control plane)"
+    },
+    {
+      "id": "agent",
+      "label": "Agent"
+    }
+  ],
+  "phases": [
+    {
+      "id": "write",
+      "label": "Write it down",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "build",
+      "label": "Build + review",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "keep",
+      "label": "Keep it true",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "need",
+    "pick",
+    "implement",
+    "review",
+    "true",
+    "delete"
+  ],
+  "nodes": [
+    {
+      "id": "need",
+      "lane": "human",
+      "col": 0,
+      "type": "external",
+      "label": "Need",
+      "sublabel": "goal, bug, idea",
+      "width": 132
+    },
+    {
+      "id": "pick",
+      "lane": "docs",
+      "col": 1,
+      "type": "database",
+      "label": "Pick the doc",
+      "sublabel": "PRD · domain · contract",
+      "tag": "ADR · plan",
+      "width": 140
+    },
+    {
+      "id": "implement",
+      "lane": "agent",
+      "col": 2,
+      "type": "backend",
+      "label": "Agent implements",
+      "sublabel": "AGENTS.md + contract",
+      "tag": "code + tests",
+      "width": 140
+    },
+    {
+      "id": "review",
+      "lane": "human",
+      "col": 3,
+      "type": "security",
+      "label": "Read the diff",
+      "sublabel": "survives a workday?",
+      "width": 140
+    },
+    {
+      "id": "true",
+      "lane": "docs",
+      "col": 4,
+      "type": "database",
+      "label": "Docs stay true",
+      "sublabel": "contract, domain, ADRs",
+      "width": 140
+    },
+    {
+      "id": "delete",
+      "lane": "docs",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Plan deleted",
+      "sublabel": "git is the archive",
+      "width": 132
+    }
+  ],
+  "edges": [
+    {
+      "id": "need-pick",
+      "from": "need",
+      "to": "pick",
+      "label": "where it belongs"
+    },
+    {
+      "id": "pick-implement",
+      "from": "pick",
+      "to": "implement",
+      "label": "spec first",
+      "variant": "emphasis"
+    },
+    {
+      "id": "implement-review",
+      "from": "implement",
+      "to": "review",
+      "label": "diff",
+      "variant": "emphasis"
+    },
+    {
+      "id": "review-rework",
+      "from": "review",
+      "to": "implement",
+      "label": "rework",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "review-true",
+      "from": "review",
+      "to": "true",
+      "label": "lands"
+    },
+    {
+      "id": "true-delete",
+      "from": "true",
+      "to": "delete",
+      "label": "facts moved",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Which doc",
+      "items": [
+        "PRD for goals; contract before the handler",
+        "ADR for expensive or irreversible choices"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Human owns",
+      "items": [
+        "What ships, and the ADR verdict",
+        "Reading every diff"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Agent owns",
+      "items": [
+        "Most code, tests, runbooks, drafts",
+        "No invented endpoints or rewritten history"
+      ]
+    }
+  ]
+}

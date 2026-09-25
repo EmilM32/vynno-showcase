@@ -30,6 +30,8 @@ jobs:
           mkdir -p _site/assets
           cp index.html styles.css script.js .nojekyll _site/
           cp -R assets _site/
+          mkdir -p _site/diagrams
+          cp diagrams/*.html _site/diagrams/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

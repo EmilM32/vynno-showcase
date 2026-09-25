@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Time session lifecycle",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "live-path",
+        "label": "Start and stop",
+        "focus": [
+          "idle",
+          "check",
+          "active",
+          "stopped"
+        ],
+        "note": "Two verbs only. Status is never patched."
+      },
+      {
+        "id": "conflict",
+        "label": "Second start",
+        "focus": [
+          "check",
+          "conflict",
+          "active"
+        ],
+        "note": "A second start is 409. The live timer keeps running; nothing auto-stops."
+      },
+      {
+        "id": "log-edits",
+        "label": "Log entries",
+        "focus": [
+          "manual",
+          "stopped",
+          "deleted"
+        ],
+        "note": "Stopped rows are mutable. Manual entry inserts one directly."
+      }
+    ],
+    "viewBox": [
+      1030,
+      610
+    ],
+    "legend": {
+      "entries": {
+        "start": {
+          "label": "no live row"
+        },
+        "decision": {
+          "label": "guard"
+        },
+        "active": {
+          "label": "live"
+        },
+        "success": {
+          "label": "log entry"
+        },
+        "failure": {
+          "label": "conflict"
+        },
+        "external": {
+          "label": "direct insert"
+        },
+        "neutral": {
+          "label": "removed"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Live timer"
+    },
+    {
+      "id": "side",
+      "label": "Conflicts and manual entry"
+    },
+    {
+      "id": "terminal",
+      "label": "Removed"
+    }
+  ],
+  "states": [
+    {
+      "id": "idle",
+      "type": "start",
+      "label": "Idle",
+      "sublabel": "no live row",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "404 on /active"
+    },
+    {
+      "id": "check",
+      "type": "decision",
+      "label": "Start",
+      "sublabel": "POST /sessions",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "one live?"
+    },
+    {
+      "id": "active",
+      "type": "active",
+      "label": "Active",
+      "sublabel": "now − startedAt",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "live"
+    },
+    {
+      "id": "stopped",
+      "type": "success",
+      "label": "Stopped",
+      "sublabel": "log entry",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "mutable"
+    },
+    {
+      "id": "conflict",
+      "type": "failure",
+      "label": "409",
+      "sublabel": "session_already_active",
+      "lane": "side",
+      "col": 0,
+      "tag": "no auto-stop"
+    },
+    {
+      "id": "manual",
+      "type": "external",
+      "label": "Manual entry",
+      "sublabel": "POST /sessions/manual",
+      "lane": "side",
+      "col": 2,
+      "tag": "insert stopped"
+    },
+    {
+      "id": "deleted",
+      "type": "neutral",
+      "label": "Deleted",
+      "sublabel": "hard delete",
+      "lane": "terminal",
+      "col": 1,
+      "tag": "terminal",
+      "yOffset": -40
+    }
+  ],
+  "transitions": [
+    {
+      "id": "start",
+      "from": "idle",
+      "to": "check"
+    },
+    {
+      "id": "insert-live",
+      "from": "check",
+      "to": "active",
+      "label": "none live",
+      "variant": "emphasis",
+      "route": "straight",
+      "labelDy": -25
+    },
+    {
+      "id": "stop",
+      "from": "active",
+      "to": "stopped",
+      "label": "stop",
+      "variant": "emphasis"
+    },
+    {
+      "id": "already-live",
+      "from": "check",
+      "to": "conflict",
+      "label": "live exists",
+      "variant": "security"
+    },
+    {
+      "id": "keeps-running",
+      "from": "conflict",
+      "to": "active",
+      "label": "keeps running",
+      "variant": "dashed"
+    },
+    {
+      "id": "manual-insert",
+      "from": "manual",
+      "to": "stopped",
+      "label": "startedAt + endedAt"
+    },
+    {
+      "id": "delete-log",
+      "from": "stopped",
+      "to": "deleted",
+      "label": "DELETE",
+      "variant": "dashed",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Verbs, not status",
+      "items": [
+        "Stop is the only live verb; sets endedAt",
+        "Stop while stopped is 409 invalid_transition"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "One live session",
+      "items": [
+        "A second start never auto-stops",
+        "A break is stop, then start"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Log entries",
+      "items": [
+        "PATCH fields and times, never status",
+        "Restart is a new POST, not this row"
+      ]
+    }
+  ]
+}

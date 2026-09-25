@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Start a session: POST /v1/sessions",
+    "locale": "en",
+    "viewBox": [
+      1060,
+      600
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "edge-and-auth",
+        "label": "Edge and identity",
+        "focus": [
+          "browser",
+          "kit",
+          "auth",
+          "pg"
+        ],
+        "note": "The cookie crosses the same-origin BFF, then resolves to one user."
+      },
+      {
+        "id": "domain-rules",
+        "label": "Domain rules",
+        "focus": [
+          "handler",
+          "service",
+          "pg"
+        ],
+        "note": "Project must exist and not be archived. At most one live session per user."
+      },
+      {
+        "id": "conflict",
+        "label": "Second start",
+        "focus": [
+          "service",
+          "handler",
+          "kit",
+          "browser"
+        ],
+        "note": "A live session already exists: 409, and the server does not auto-stop it."
+      }
+    ]
+  },
+  "participants": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "vynno.localhost"
+    },
+    {
+      "id": "kit",
+      "type": "frontend",
+      "label": "SvelteKit BFF",
+      "sublabel": "routes/v1/[...path]",
+      "brand": "svelte"
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "requireAuth",
+      "sublabel": "Gin middleware"
+    },
+    {
+      "id": "handler",
+      "type": "backend",
+      "label": "startSession",
+      "sublabel": "httpserver",
+      "brand": "go"
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "Service",
+      "sublabel": "StartSession"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "db vynno",
+      "brand": "postgresql"
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 262,
+      "label": "Edge + identity"
+    },
+    {
+      "from": 268,
+      "to": 380,
+      "label": "Domain rules"
+    },
+    {
+      "from": 386,
+      "to": 441,
+      "label": "201 Created"
+    },
+    {
+      "from": 447,
+      "to": 530,
+      "label": "Already active"
+    }
+  ],
+  "messages": [
+    {
+      "id": "post-sessions",
+      "from": "browser",
+      "to": "kit",
+      "y": 165,
+      "label": "POST /v1/sessions",
+      "variant": "emphasis"
+    },
+    {
+      "id": "proxy",
+      "from": "kit",
+      "to": "auth",
+      "y": 193,
+      "label": "proxy + vynno_session",
+      "variant": "emphasis"
+    },
+    {
+      "id": "resolve-token",
+      "from": "auth",
+      "to": "pg",
+      "y": 221,
+      "label": "SHA-256 token lookup",
+      "variant": "security"
+    },
+    {
+      "id": "csrf-ok",
+      "from": "auth",
+      "to": "handler",
+      "y": 249,
+      "label": "Origin ok, user set",
+      "variant": "security"
+    },
+    {
+      "id": "start",
+      "from": "handler",
+      "to": "service",
+      "y": 282,
+      "label": "StartSession(projectId)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "get-project",
+      "from": "service",
+      "to": "pg",
+      "y": 310,
+      "label": "project not archived?",
+      "variant": "default"
+    },
+    {
+      "id": "get-live",
+      "from": "service",
+      "to": "pg",
+      "y": 338,
+      "label": "any live session? no",
+      "variant": "default"
+    },
+    {
+      "id": "insert",
+      "from": "service",
+      "to": "pg",
+      "y": 366,
+      "label": "INSERT status=active",
+      "variant": "emphasis"
+    },
+    {
+      "id": "created-json",
+      "from": "handler",
+      "to": "kit",
+      "y": 399,
+      "label": "201 SessionDTO",
+      "variant": "return"
+    },
+    {
+      "id": "timer-runs",
+      "from": "kit",
+      "to": "browser",
+      "y": 427,
+      "label": "timer runs",
+      "variant": "return"
+    },
+    {
+      "id": "live-found",
+      "from": "service",
+      "to": "handler",
+      "y": 460,
+      "label": "session_already_active",
+      "variant": "dashed"
+    },
+    {
+      "id": "conflict-json",
+      "from": "handler",
+      "to": "kit",
+      "y": 488,
+      "label": "409 error envelope",
+      "variant": "return"
+    },
+    {
+      "id": "no-auto-stop",
+      "from": "kit",
+      "to": "browser",
+      "y": 516,
+      "label": "409, no auto-stop",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "kit",
+      "from": 160,
+      "to": 433,
+      "type": "frontend"
+    },
+    {
+      "participant": "auth",
+      "from": 190,
+      "to": 255,
+      "type": "security"
+    },
+    {
+      "participant": "handler",
+      "from": 244,
+      "to": 405,
+      "type": "backend"
+    },
+    {
+      "participant": "service",
+      "from": 277,
+      "to": 372,
+      "type": "backend"
+    },
+    {
+      "participant": "service",
+      "from": 455,
+      "to": 466,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Same origin",
+      "items": [
+        "The SPA never sends Authorization",
+        "Mutations check Origin against SPA_ORIGIN"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Rules live on the server",
+      "items": [
+        "Project must exist and not be archived",
+        "Restart is a new POST, never a resumed row"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "One live session",
+      "items": [
+        "409 when a live row exists; no auto-stop",
+        "Unique index sessions_one_live_per_user backs it up"
+      ]
+    }
+  ]
+}

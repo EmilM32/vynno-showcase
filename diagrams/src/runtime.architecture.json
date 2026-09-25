@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Vynno runtime on one machine",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "daily-path",
+        "label": "Daily request path",
+        "focus": [
+          "browser",
+          "caddy",
+          "kit",
+          "api",
+          "pg"
+        ],
+        "note": "Loopback HTTPS from the bookmarked origin to the daily database."
+      },
+      {
+        "id": "playground",
+        "label": "Playground",
+        "focus": [
+          "dev",
+          "pgdev",
+          "mailpit"
+        ],
+        "note": "go run on :8081 against vynno_dev. Seed and reset refuse any other database."
+      },
+      {
+        "id": "agent",
+        "label": "Agent access",
+        "focus": [
+          "grok",
+          "mcp",
+          "pg"
+        ],
+        "note": "A local stdio process reads one account's history. No HTTP route, no writes."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser",
+      "sublabel": "vynno.localhost",
+      "pos": [
+        40,
+        170
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "caddy",
+      "type": "security",
+      "label": "Caddy",
+      "sublabel": "loopback :443",
+      "tag": "tls internal",
+      "pos": [
+        250,
+        170
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "kit",
+      "type": "frontend",
+      "label": "SvelteKit",
+      "sublabel": "adapter-node :27180",
+      "tag": "SSR + /v1 BFF",
+      "brand": "svelte",
+      "pos": [
+        460,
+        170
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Go API",
+      "sublabel": "bin/vynno-api :27182",
+      "brand": "go",
+      "pos": [
+        690,
+        170
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "db vynno",
+      "brand": "postgresql",
+      "pos": [
+        920,
+        170
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "grok",
+      "type": "external",
+      "label": "Grok",
+      "sublabel": "agent client",
+      "pos": [
+        460,
+        40
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "mcp",
+      "type": "backend",
+      "label": "cmd/mcp",
+      "sublabel": "read-only, one account",
+      "pos": [
+        920,
+        40
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "mailpit",
+      "type": "messagebus",
+      "label": "Mailpit",
+      "sublabel": "SMTP :1025",
+      "pos": [
+        690,
+        300
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "dev",
+      "type": "backend",
+      "label": "Playground API",
+      "sublabel": "go run :8081",
+      "pos": [
+        460,
+        430
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "pgdev",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "db vynno_dev",
+      "brand": "postgresql",
+      "pos": [
+        920,
+        430
+      ],
+      "size": [
+        140,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Compose Postgres :5433",
+      "wraps": [
+        "pg",
+        "pgdev"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-caddy",
+      "from": "browser",
+      "to": "caddy",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "caddy-kit",
+      "from": "caddy",
+      "to": "kit",
+      "label": "reverse_proxy"
+    },
+    {
+      "id": "kit-api",
+      "from": "kit",
+      "to": "api",
+      "label": "/v1 + cookie",
+      "variant": "emphasis"
+    },
+    {
+      "id": "api-pg",
+      "from": "api",
+      "to": "pg",
+      "label": "sqlc"
+    },
+    {
+      "id": "grok-mcp",
+      "from": "grok",
+      "to": "mcp",
+      "label": "stdio tools"
+    },
+    {
+      "id": "mcp-pg",
+      "from": "mcp",
+      "to": "pg",
+      "label": "allowlist SELECT",
+      "variant": "security",
+      "labelDy": 24
+    },
+    {
+      "id": "api-mail",
+      "from": "api",
+      "to": "mailpit",
+      "label": "OTP mail",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "id": "dev-mail",
+      "from": "dev",
+      "to": "mailpit",
+      "variant": "dashed"
+    },
+    {
+      "id": "dev-pgdev",
+      "from": "dev",
+      "to": "pgdev",
+      "label": "seed / reset"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Daily path",
+      "items": [
+        "Bookmark https://vynno.localhost, not :27180",
+        "Kit proxies /v1, so vynno_session stays first-party",
+        "No cloud host: available when the laptop is on"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Playground",
+      "items": [
+        "scripts/dev on :8081 against vynno_dev",
+        "Frontend e2e scrapes Mailpit for codes",
+        "Production vynno has no wipe script"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Agent",
+      "items": [
+        "Token checked at boot and on every tool call",
+        "Secret columns and avatar bytes never selected",
+        "Start and stop stay on /v1"
+      ]
+    }
+  ]
+}

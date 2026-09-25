@@ -79,6 +79,7 @@
 						>
 						<a class="text-link" href="#architecture">Architecture</a>
 						<a class="text-link" href="#agent">Agent access</a>
+						<a class="text-link" href="#diagrams">Diagrams</a>
 						<a class="text-link" href="#process">How it was built</a>
 					</div>
 					<p class="status">
@@ -412,6 +413,10 @@
 							</p>
 						</div>
 					</div>
+					<p class="caption">
+						<a href="./diagrams/runtime.html">Interactive runtime diagram</a> — the same
+						machine with Mailpit and the Compose boundary.
+					</p>
 				</article>
 
 				<article class="block" id="agent" aria-labelledby="agent-title">
@@ -651,6 +656,10 @@
 							</div>
 						</div>
 					</div>
+					<p class="caption">
+						<a href="./diagrams/session-lifecycle.html">Interactive lifecycle</a> — the 409
+						branch, manual entry, and delete.
+					</p>
 				</article>
 
 				<article class="block" aria-labelledby="seam-title">
@@ -686,6 +695,91 @@
 						<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/api-contract.md"
 							>API contract</a
 						>
+						·
+						<a href="./diagrams/start-session.html">One request across the seam</a>
+					</p>
+				</article>
+
+				<article class="block" id="diagrams" aria-labelledby="diagrams-title">
+					<h3 id="diagrams-title">Explore the diagrams</h3>
+					<p class="block-lede">
+						Each one opens as its own page: pan, zoom, search, trace a relationship, or play
+						the guided views. Facts come from the docs and code in both repos.
+					</p>
+					<ul class="shots">
+						<li>
+							<a class="shot diagram-shot" href="./diagrams/runtime.html">
+								<img
+									src="./assets/diagrams/runtime.webp"
+									width="960"
+									height="540"
+									alt="Architecture diagram: browser, Caddy, SvelteKit, Go API and Postgres, plus the playground and the read-only MCP."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">architecture</span>
+									<span class="diagram-name">Runtime on one machine</span>
+									<span class="diagram-note">Daily path, playground on :8081, and the agent’s read-only lane.</span>
+								</span>
+							</a>
+						</li>
+						<li>
+							<a class="shot diagram-shot" href="./diagrams/start-session.html">
+								<img
+									src="./assets/diagrams/start-session.webp"
+									width="960"
+									height="540"
+									alt="Sequence diagram of POST /v1/sessions from the browser through the BFF, auth, handler, service and Postgres."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">sequence</span>
+									<span class="diagram-name">Start a session</span>
+									<span class="diagram-note">Cookie, token lookup, domain rules, 201 — or 409 without an auto-stop.</span>
+								</span>
+							</a>
+						</li>
+						<li>
+							<a class="shot diagram-shot" href="./diagrams/session-lifecycle.html">
+								<img
+									src="./assets/diagrams/session-lifecycle.webp"
+									width="960"
+									height="540"
+									alt="Lifecycle diagram: idle, start, active, stopped, with a 409 conflict, manual entry and delete."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">lifecycle</span>
+									<span class="diagram-name">Time session lifecycle</span>
+									<span class="diagram-note">Two verbs, one live row, mutable log entries.</span>
+								</span>
+							</a>
+						</li>
+						<li>
+							<a class="shot diagram-shot" href="./diagrams/write-first.html">
+								<img
+									src="./assets/diagrams/write-first.webp"
+									width="960"
+									height="540"
+									alt="Workflow diagram across human, docs and agent lanes: need, pick the doc, agent implements, read the diff, docs stay true."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">workflow</span>
+									<span class="diagram-name">Write first, then build</span>
+									<span class="diagram-note">Docs as the control plane, with a review gate that sends work back.</span>
+								</span>
+							</a>
+						</li>
+					</ul>
+					<p class="caption">
+						Rendered with
+						<a href="https://github.com/tt-a1i/archify">archify</a>. Sources live in
+						<code class="path">diagrams/src</code>.
 					</p>
 				</article>
 			</section>
@@ -762,6 +856,8 @@
 						<a href="https://github.com/EmilM32/vynno/blob/main/AGENTS.md">Frontend AGENTS.md</a>
 						·
 						<a href="https://github.com/EmilM32/vynno-api/blob/main/AGENTS.md">API AGENTS.md</a>
+						·
+						<a href="./diagrams/write-first.html">Interactive workflow</a>
 					</p>
 				</article>
 

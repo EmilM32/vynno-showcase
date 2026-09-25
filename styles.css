@@ -220,6 +220,7 @@ a {
 .life-state:focus-visible,
 .filter-btn:focus-visible,
 .tool-btn:focus-visible,
+.diagram-shot:focus-visible,
 .adr summary:focus-visible {
 	outline: 2px solid var(--primary);
 	outline-offset: 1px;
@@ -407,6 +408,44 @@ h2 {
 	margin: 0;
 	color: var(--muted);
 	font-size: 0.875rem;
+}
+
+.diagram-shot {
+	display: block;
+	height: 100%;
+	color: var(--text);
+	text-decoration: none;
+	transition: border-color var(--duration-ui) var(--ease-out);
+}
+
+.diagram-shot:hover {
+	border-color: var(--primary);
+}
+
+.diagram-shot img {
+	aspect-ratio: 16 / 9;
+}
+
+.shot-body {
+	display: grid;
+	gap: 0.35rem;
+	padding: 0.85rem 1rem 1rem;
+}
+
+.diagram-note {
+	color: var(--muted);
+	font-size: 0.875rem;
+}
+
+.diagram-shot .diagram-type {
+	font-family: var(--mono);
+	font-size: 0.75rem;
+	color: var(--primary);
+}
+
+.diagram-shot .diagram-name {
+	font-weight: 600;
+	letter-spacing: -0.01em;
 }
 
 .path {
@@ -1255,7 +1294,8 @@ h2 {
 	}
 
 	.press,
-	.press:active {
+	.press:active,
+	.diagram-shot {
 		transition: none;
 		transform: none;
 	}
