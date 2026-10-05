@@ -4,7 +4,7 @@
 		return template.content.querySelector(`[${attr}="${key}"]`);
 	};
 
-	const bindSwitcher = ({ root, buttons, attr, template, kicker, panel }) => {
+	const bindSwitcher = ({ root, buttons, attr, template, kicker, panel, onSelect }) => {
 		if (!root || !buttons.length || !panel || !kicker) return;
 
 		const apply = (btn) => {
@@ -19,6 +19,7 @@
 			const old = panel.querySelector('p:not(.topo-detail-kicker)');
 			if (old) old.replaceWith(next);
 			else panel.append(next);
+			if (onSelect) onSelect(key);
 		};
 
 		buttons.forEach((btn) => {
@@ -62,8 +63,26 @@
 		});
 	};
 
+	const runTimeline = () => {
+		const root = document.getElementById('timeline-card');
+		const shots = [...document.querySelectorAll('.tl-shot')];
+		bindSwitcher({
+			root,
+			buttons: [...(root ? root.querySelectorAll('.filter-btn') : [])],
+			attr: 'data-view',
+			template: document.getElementById('timeline-copy'),
+			kicker: document.querySelector('#timeline-detail .topo-detail-kicker'),
+			panel: document.getElementById('timeline-detail'),
+			onSelect: (view) => {
+				shots.forEach((shot) => {
+					shot.toggleAttribute('data-on', shot.dataset.view === view);
+				});
+			},
+		});
+	};
+
 	const runAdrFilter = () => {
-		const buttons = [...document.querySelectorAll('.filter-btn')];
+		const buttons = [...document.querySelectorAll('.adr-filters .filter-btn')];
 		const cards = [...document.querySelectorAll('.adr')];
 		if (!buttons.length) return;
 
@@ -116,6 +135,7 @@
 	runTopology();
 	runTools();
 	runLifecycle();
+	runTimeline();
 	runAdrFilter();
 	runNav();
 })();

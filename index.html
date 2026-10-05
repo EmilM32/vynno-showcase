@@ -77,6 +77,7 @@
 						<a class="btn btn-primary press" href="https://github.com/EmilM32/vynno"
 							>View on GitHub</a
 						>
+						<a class="text-link" href="#timeline">New: Insights timeline</a>
 						<a class="text-link" href="#architecture">Architecture</a>
 						<a class="text-link" href="#agent">Agent access</a>
 						<a class="text-link" href="#diagrams">Diagrams</a>
@@ -84,7 +85,8 @@
 					</div>
 					<p class="status">
 						<span class="mono">status</span>
-						Local production. Not a hosted app. Source is public.
+						Local production · <span class="mono">v1.3.0</span>. Not a hosted app. Source is
+						public.
 					</p>
 				</div>
 
@@ -94,7 +96,7 @@
 							src="./assets/screens/timer.webp"
 							width="1440"
 							height="900"
-							alt="Vynno timer: an active Identity session, monospaced clock, Start/Stop only, and recent tasks."
+							alt="Vynno timer: an active session, monospaced clock, Start/Stop only, today’s summary, and recent tasks."
 							fetchpriority="high"
 						/>
 					</div>
@@ -151,13 +153,16 @@
 								src="./assets/screens/timer.webp"
 								width="1440"
 								height="900"
-								alt="Timer screen with an active session clock and recent tasks."
+								alt="Timer screen with an active session clock, today’s summary, and recent tasks."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/timer</code>
-								<p>One active session. Start or stop. A break is a new session.</p>
+								<p>
+									One active session. Start or stop. While idle, the note suggests earlier
+									tasks.
+								</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -167,7 +172,7 @@
 								src="./assets/screens/dashboard.webp"
 								width="1440"
 								height="900"
-								alt="Dashboard with today’s total, an active current focus, and a week of hour bars."
+								alt="Dashboard with today’s total, current focus, active projects, and a week of hour bars."
 								loading="lazy"
 								decoding="async"
 							/>
@@ -180,16 +185,38 @@
 					<li>
 						<figure class="shot">
 							<img
+								src="./assets/screens/dashboard-year.webp"
+								width="1440"
+								height="900"
+								alt="Last 12 months heatmap on the Dashboard, shaded against the daily target, with current streak, best streak, active days, and total."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/dashboard</code>
+								<p>
+									Last 12 months, shaded against the daily target. Weekends off never break a
+									streak.
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+					<li>
+						<figure class="shot">
+							<img
 								src="./assets/screens/logs.webp"
 								width="1440"
 								height="900"
-								alt="Logs list with date, project, and activity filters, Entries layout, and an in-progress row."
+								alt="Logs list with date, project, and activity filters, Export and Add entry, and an in-progress row."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/logs</code>
-								<p>Search, date and facet filters, edit or add an entry.</p>
+								<p>
+									Search and filters. Gaps of an hour or more show as untracked. Export CSV,
+									JSON, or a timesheet.
+								</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -215,13 +242,16 @@
 								src="./assets/screens/insights.webp"
 								width="1440"
 								height="900"
-								alt="Insights with a visible week range, project donut, and time by activity."
+								alt="Insights for two weeks: a project donut with the change against the previous period, time by activity, and the top of the timeline."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/insights</code>
-								<p>Time by project and activity. Week, 2 weeks, month, or custom.</p>
+								<p>
+									Time by project and activity, against the same span of the previous period.
+									A past range is one request.
+								</p>
 							</figcaption>
 						</figure>
 					</li>
@@ -231,7 +261,7 @@
 								src="./assets/screens/projects.webp"
 								width="1440"
 								height="900"
-								alt="Projects list with color chips, codes, session counts, and Active/Archived tabs."
+								alt="Projects list with color chips, codes, Active/Archived tabs, and row actions."
 								loading="lazy"
 								decoding="async"
 							/>
@@ -247,7 +277,7 @@
 								src="./assets/screens/project.webp"
 								width="1440"
 								height="900"
-								alt="Project dossier for Identity with KPIs, week bars, activity split, and entries."
+								alt="Project dossier with KPIs, period hour bars, activity split, and entries."
 								loading="lazy"
 								decoding="async"
 							/>
@@ -263,17 +293,140 @@
 								src="./assets/screens/settings.webp"
 								width="1440"
 								height="900"
-								alt="Settings with profile, activity types, and device preferences."
+								alt="Settings with profile, the collapsed Security card, and activity types."
 								loading="lazy"
 								decoding="async"
 							/>
 							<figcaption>
 								<code class="path">/settings</code>
-								<p>Profile, language, named themes, activity types.</p>
+								<p>
+									Target and default project follow the account. Theme, language, and reminders
+									stay on the device.
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+					<li>
+						<figure class="shot">
+							<img
+								src="./assets/screens/palette.webp"
+								width="1440"
+								height="900"
+								alt="Command palette over the Dashboard: Stop session for the live timer, then recent tasks to resume."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">⌘K</code>
+								<p>Start, stop, resume, or open a project without leaving the keyboard.</p>
 							</figcaption>
 						</figure>
 					</li>
 				</ul>
+				<div class="tree-card around">
+					<p class="mono tree-kicker">around every screen</p>
+					<ul class="road-list">
+						<li>
+							A live session puts <code class="path">▶ HH:MM:SS</code> in the tab title and a dot
+							on the icon.
+						</li>
+						<li>Tabs share writes. Another device catches up when you look at it.</li>
+						<li>A session past the reminder threshold asks to keep going or stop.</li>
+						<li>The daily URL installs as an app. It still needs the API.</li>
+					</ul>
+				</div>
+
+				<article class="block" id="timeline" aria-labelledby="timeline-title">
+					<p class="kicker mono">new in 1.3.0</p>
+					<h3 id="timeline-title">When, not only how much</h3>
+					<p class="block-lede" id="timeline-caption">
+						Insights showed totals. The timeline card shows when the time was logged and how it
+						spread across days and projects. One card, two toggles. Select a view.
+					</p>
+					<div
+						class="tl-toggle"
+						id="timeline-card"
+						role="group"
+						aria-labelledby="timeline-title"
+						aria-describedby="timeline-caption"
+					>
+						<button type="button" class="filter-btn" data-view="days" aria-pressed="true">
+							Days
+						</button>
+						<button type="button" class="filter-btn" data-view="projects" aria-pressed="false">
+							Projects
+						</button>
+						<button type="button" class="filter-btn" data-view="rhythm" aria-pressed="false">
+							Rhythm
+						</button>
+					</div>
+					<figure class="tl-frame">
+						<img
+							class="tl-shot"
+							data-view="days"
+							data-on
+							src="./assets/screens/timeline-days.webp"
+							width="1170"
+							height="550"
+							alt="Timeline Days view: one row per day, each session a bar where it fell on the clock, day totals on the right."
+							loading="lazy"
+							decoding="async"
+						/>
+						<img
+							class="tl-shot"
+							data-view="projects"
+							src="./assets/screens/timeline-projects.webp"
+							width="1170"
+							height="550"
+							alt="Timeline Projects view: one row per project, each day a column of the clock window, totals and shares on the right."
+							loading="lazy"
+							decoding="async"
+						/>
+						<img
+							class="tl-shot"
+							data-view="rhythm"
+							src="./assets/screens/timeline-rhythm.webp"
+							width="1170"
+							height="550"
+							alt="Timeline Rhythm view: average minutes per hour of day stacked by project, with most focused hours, usual start and end, and share before noon."
+							loading="lazy"
+							decoding="async"
+						/>
+					</figure>
+					<div class="tl-notes">
+						<div class="life-detail" id="timeline-detail" role="status">
+							<p class="topo-detail-kicker mono">days</p>
+							<p>
+								One row per day. Each session sits where it fell on the clock; overlaps take
+								sub-lanes. The day total is on the right.
+							</p>
+						</div>
+						<ul class="road-list">
+							<li>Sessions split at local midnight. The live one grows to now.</li>
+							<li>Working hours or 24h, for all three views.</li>
+							<li>Over 62 days, only Rhythm. A year of bars is not readable.</li>
+							<li>
+								A past range reads its own window,
+								<code class="path">GET /sessions?from&amp;to</code>, not the whole history.
+							</li>
+							<li>
+								One SVG path per project colour keeps the longest main-thread task under
+								200&nbsp;ms.
+							</li>
+						</ul>
+					</div>
+					<p class="caption">
+						<a href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0028-insights-timeline.md"
+							>ADR-0028</a
+						>
+						·
+						<a href="https://github.com/EmilM32/vynno/blob/main/docs/screens-and-flows.md#34-insights-insights"
+							>Insights spec</a
+						>
+						·
+						<a href="./diagrams/insights-data.html">Where the numbers come from</a>
+					</p>
+				</article>
 			</section>
 
 			<section class="arch wrap" id="architecture" aria-labelledby="arch-title">
@@ -533,8 +686,8 @@
 								<li>
 									<span class="layer-name">stores</span>
 									<span class="layer-meta"
-										>session, auth, prefs — request-scoped on SSR, client singleton after
-										hydrate</span
+										>session (synced across tabs), auth, prefs, session window — request-scoped
+										on SSR, client singleton after hydrate</span
 									>
 								</li>
 								<li>
@@ -605,6 +758,10 @@
 											<span class="tree-note">display name, email, avatar</span>
 										</li>
 										<li>
+											<span class="tree-node">Prefs</span>
+											<span class="tree-note">daily target, default project</span>
+										</li>
+										<li>
 											<span class="tree-node">Project*</span>
 											<span class="tree-note">name, color, code, archived</span>
 										</li>
@@ -620,7 +777,8 @@
 								</li>
 							</ul>
 							<p class="caption">
-								No Task table. “Recent tasks” are reconstructed from recent sessions.
+								No Task table. “Recent tasks” are reconstructed from recent sessions. Theme and
+								language stay on the device, not on the account.
 							</p>
 						</div>
 						<div
@@ -775,6 +933,23 @@
 								</span>
 							</a>
 						</li>
+						<li class="shot-wide">
+							<a class="shot diagram-shot" href="./diagrams/insights-data.html">
+								<img
+									src="./assets/diagrams/insights-data.webp"
+									width="960"
+									height="540"
+									alt="Dataflow diagram: an Insights range reads loaded history, day totals, or a session window, then feeds the totals charts and the timeline."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">dataflow</span>
+									<span class="diagram-name">Insights data path</span>
+									<span class="diagram-note">Today reads loaded history. A past range reads day totals and its own session window.</span>
+								</span>
+							</a>
+						</li>
 					</ul>
 					<p class="caption">
 						Rendered with
@@ -893,7 +1068,7 @@
 					<h3 id="road-title">Roadmap</h3>
 					<p class="block-lede">
 						API phases 0–4 shipped, then profile, seed, activity types, session mutate, mail,
-						and Swagger on the same host. Phase 5 is later, and only via a contract amendment.
+						and Swagger on the same host. Phase 5 is under way, one contract amendment at a time.
 					</p>
 					<ol class="phases" aria-label="API phases">
 						<li class="done">
@@ -916,12 +1091,12 @@
 							<span class="mono">4</span>
 							<span>Local prod</span>
 						</li>
-						<li class="later-phase">
+						<li class="active-phase" aria-current="step">
 							<span class="mono">5</span>
-							<span>Later</span>
+							<span>In progress</span>
 						</li>
 					</ol>
-					<div class="road-split">
+					<div class="road-split road-split-3">
 						<div>
 							<p class="mono tree-kicker">shipped after phase 4</p>
 							<ul class="road-list">
@@ -929,19 +1104,30 @@
 								<li>Playground seed / reset on <code class="path">vynno_dev</code></li>
 								<li>User-defined activity types</li>
 								<li>Session edit, delete, manual entry</li>
-								<li>Logs filters and grouped layout; project dossier</li>
 								<li>Cursor pagination, email login, outbound mail, Swagger</li>
 								<li>Read-only MCP for one account</li>
+								<li>Strict JSON, bounded text, auth rate limits</li>
+							</ul>
+						</div>
+						<div>
+							<p class="mono tree-kicker">phase 5 so far</p>
+							<ul class="road-list">
+								<li>Account prefs, <code class="path">/me/prefs</code></li>
+								<li>Change password or email while signed in</li>
+								<li>Day totals, <code class="path">/stats/days</code></li>
+								<li>
+									<code class="path">from</code> / <code class="path">to</code> window on
+									<code class="path">GET /sessions</code>
+								</li>
 							</ul>
 						</div>
 						<div>
 							<p class="mono tree-kicker">later / open</p>
 							<ul class="road-list dim">
-								<li>Prefs persistence</li>
-								<li>Insights aggregation endpoints</li>
-								<li>Session target UI, richer ⌘K</li>
 								<li>Multi-user workspaces</li>
-								<li>OAuth / 2FA / change-email</li>
+								<li>OAuth / passwordless / 2FA</li>
+								<li>Desktop Quick Command panel and top bar</li>
+								<li>A Task entity; default activity type</li>
 							</ul>
 						</div>
 					</div>
@@ -1090,14 +1276,18 @@
 							<summary>
 								<span class="adr-id mono">FE 0021</span>
 								<span class="adr-title">Insights uses an explicit civil range</span>
-								<span class="adr-status mono">accepted</span>
+								<span class="adr-status mono">amended</span>
 							</summary>
 							<div class="adr-body">
 								<p>
 									Week, 2 weeks, month, or custom From–To. Prev/next shift the grain. Range is
-									view-local — leaving the screen resets to this week.
+									view-local — leaving the screen resets to this week. The donut header compares
+									with the same elapsed span of the previous period.
 								</p>
-								<p class="caption">No API date filter; the client pages until the window start.</p>
+								<p class="caption">
+									A past range reads <code class="path">/stats/days</code> instead of paging
+									history. No chart-shaped endpoint.
+								</p>
 								<p class="caption">
 									<a
 										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0021-insights-range.md"
@@ -1167,6 +1357,47 @@
 									<a
 										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0005-session-lifecycle.md"
 										>API</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0026</span>
+								<span class="adr-title">Tabs and devices stay in step</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Sibling tabs replay each write over a <code class="path">BroadcastChannel</code>.
+									Another device re-reads the live session when its tab becomes visible. A Stop
+									that loses a race reconciles instead of failing.
+								</p>
+								<p class="caption">Not polling, and not SSE — no new API surface.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0026-session-sync.md"
+										>ADR-0026</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0027</span>
+								<span class="adr-title">Year heatmap; weekends never break a streak</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									53 weeks from <code class="path">/stats/days</code>, shaded against the daily
+									target. A streak is days with any tracked time; an untracked weekday ends it.
+								</p>
+								<p class="caption">Not GitHub-style every-day streaks — they reward working weekends.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0027-year-heatmap-streaks.md"
+										>ADR-0027</a
 									>
 								</p>
 							</div>
@@ -1297,6 +1528,47 @@
 								</p>
 							</div>
 						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0017</span>
+								<span class="adr-title">Account prefs, not device prefs</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									<code class="path">GET</code> / <code class="path">PATCH /me/prefs</code>: daily
+									target and default project follow the user. Theme and locale stay on the device,
+									applied before first paint.
+								</p>
+								<p class="caption">Not fields on the profile, not a free-form key-value blob.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0017-account-prefs.md"
+										>ADR-0017</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0018</span>
+								<span class="adr-title">Day totals, computed per request</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									<code class="path">/stats/days</code> sums tracked time per local date, project,
+									and activity in the client’s IANA zone. The server sums; the SPA shapes.
+								</p>
+								<p class="caption">Not one endpoint per chart, not a rollup table.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0018-day-totals.md"
+										>ADR-0018</a
+									>
+								</p>
+							</div>
+						</details>
 					</div>
 					<p class="caption">
 						<a href="https://github.com/EmilM32/vynno/blob/main/docs/adr/README.md"
@@ -1413,6 +1685,20 @@
 				<code class="path">to</code> includes that whole day). A session that crosses midnight
 				is split. Totals are computed here; <code class="path">/v1</code> grows no aggregate
 				route.
+			</p>
+		</template>
+		<template id="timeline-copy">
+			<p data-view="days">
+				One row per day. Each session sits where it fell on the clock; overlaps take sub-lanes.
+				The day total is on the right.
+			</p>
+			<p data-view="projects">
+				One row per project. Each day is a column of the clock window, so nights do not eat the
+				width. The project total and share are on the right.
+			</p>
+			<p data-view="rhythm">
+				Average minutes per hour of day, stacked by project. Plus the most focused two hours, the
+				usual first start → last end, and the share before noon.
 			</p>
 		</template>
 		<template id="life-copy">

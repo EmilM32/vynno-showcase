@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Vynno Insights data path",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      900,
+      500
+    ],
+    "views": [
+      {
+        "id": "open-range",
+        "label": "Range with today",
+        "focus": [
+          "list",
+          "store",
+          "totals",
+          "segments",
+          "charts",
+          "timeline"
+        ],
+        "note": "Totals and the timeline come from loaded history, drained far enough back."
+      },
+      {
+        "id": "past-range",
+        "label": "Past range",
+        "focus": [
+          "days",
+          "dayq",
+          "window",
+          "query",
+          "totals",
+          "segments",
+          "charts",
+          "timeline"
+        ],
+        "note": "Day totals for the charts and one session window for the timeline. No history paging."
+      },
+      {
+        "id": "timeline",
+        "label": "Timeline card",
+        "focus": [
+          "store",
+          "query",
+          "segments",
+          "timeline"
+        ],
+        "note": "Either source becomes per-day segments: clipped, split at local midnight, live to now."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "label": "Read /v1"
+    },
+    {
+      "label": "Hold"
+    },
+    {
+      "label": "Shape"
+    },
+    {
+      "label": "Draw"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "days",
+      "type": "backend",
+      "label": "GET /stats/days",
+      "sublabel": "date × project × activity",
+      "stage": 0,
+      "row": 0,
+      "tag": "API 0018",
+      "width": 134
+    },
+    {
+      "id": "list",
+      "type": "backend",
+      "label": "GET /sessions",
+      "sublabel": "keyset, newest first",
+      "stage": 0,
+      "row": 1,
+      "tag": "cursor",
+      "width": 122
+    },
+    {
+      "id": "window",
+      "type": "backend",
+      "label": "/sessions?from&to",
+      "sublabel": "GET, overlap window",
+      "stage": 0,
+      "row": 2,
+      "tag": "1.3.0",
+      "width": 146
+    },
+    {
+      "id": "dayq",
+      "type": "frontend",
+      "label": "Day totals",
+      "sublabel": "range + previous",
+      "stage": 1,
+      "row": 0,
+      "tag": "past range",
+      "width": 112
+    },
+    {
+      "id": "store",
+      "type": "frontend",
+      "label": "SessionStore",
+      "sublabel": "loaded history",
+      "stage": 1,
+      "row": 1,
+      "tag": "ensureThrough",
+      "width": 118
+    },
+    {
+      "id": "query",
+      "type": "frontend",
+      "label": "SessionWindowQuery",
+      "sublabel": "own run, not history",
+      "stage": 1,
+      "row": 2,
+      "tag": "past range",
+      "width": 152
+    },
+    {
+      "id": "totals",
+      "type": "frontend",
+      "label": "Range totals",
+      "sublabel": "vs previous period",
+      "stage": 2,
+      "row": 0,
+      "tag": "client sums",
+      "width": 118
+    },
+    {
+      "id": "segments",
+      "type": "frontend",
+      "label": "timelineSegments",
+      "sublabel": "split at midnight",
+      "stage": 2,
+      "row": 2,
+      "tag": "ADR-0028",
+      "width": 140
+    },
+    {
+      "id": "charts",
+      "type": "frontend",
+      "label": "Donut, Activity",
+      "sublabel": "and breakdown",
+      "stage": 3,
+      "row": 0,
+      "tag": "LayerChart",
+      "width": 134
+    },
+    {
+      "id": "timeline",
+      "type": "frontend",
+      "label": "Timeline card",
+      "sublabel": "Days · Projects · Rhythm",
+      "stage": 3,
+      "row": 2,
+      "tag": "1.3.0",
+      "width": 122
+    }
+  ],
+  "flows": [
+    {
+      "id": "days-dayq",
+      "from": "days",
+      "to": "dayq",
+      "label": "whole days",
+      "variant": "default"
+    },
+    {
+      "id": "list-store",
+      "from": "list",
+      "to": "store",
+      "label": "drain",
+      "classification": "range − 7 days",
+      "variant": "emphasis"
+    },
+    {
+      "id": "window-query",
+      "from": "window",
+      "to": "query",
+      "label": "100 / page",
+      "variant": "default"
+    },
+    {
+      "id": "dayq-totals",
+      "from": "dayq",
+      "to": "totals",
+      "label": "past range",
+      "variant": "default"
+    },
+    {
+      "id": "store-totals",
+      "from": "store",
+      "to": "totals",
+      "label": "range with today",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "via": [
+        [
+          315,
+          214
+        ],
+        [
+          530,
+          214
+        ]
+      ],
+      "labelSegment": 1
+    },
+    {
+      "id": "store-segments",
+      "from": "store",
+      "to": "segments",
+      "label": "range with today",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "via": [
+        [
+          315,
+          328
+        ],
+        [
+          530,
+          328
+        ]
+      ],
+      "labelSegment": 1
+    },
+    {
+      "id": "query-segments",
+      "from": "query",
+      "to": "segments",
+      "label": "past range",
+      "variant": "default"
+    },
+    {
+      "id": "totals-charts",
+      "from": "totals",
+      "to": "charts",
+      "label": "per project",
+      "classification": "and activity",
+      "variant": "default"
+    },
+    {
+      "id": "segments-timeline",
+      "from": "segments",
+      "to": "timeline",
+      "label": "per-day bars",
+      "variant": "default"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Range with today",
+      "items": [
+        "Totals and the timeline read loaded history",
+        "The drain reaches the previous window and 7 days before the range",
+        "The comparison cuts the previous window to the same elapsed span"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Past range",
+      "items": [
+        "Charts sum /stats/days for the range and its previous window",
+        "The timeline reads only its own window, GET /sessions?from&to",
+        "If those sessions are already loaded, neither request is made"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Timeline segments",
+      "items": [
+        "Clipped to the range and split at local midnight",
+        "A session past midnight counts on both days, unlike /stats/days",
+        "Over 62 days, only Rhythm draws"
+      ]
+    }
+  ]
+}

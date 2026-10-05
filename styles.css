@@ -343,7 +343,8 @@ h2 {
 	scroll-margin-top: 4.5rem;
 }
 
-#agent {
+#agent,
+#timeline {
 	scroll-margin-top: 4.5rem;
 }
 
@@ -446,6 +447,52 @@ h2 {
 .diagram-shot .diagram-name {
 	font-weight: 600;
 	letter-spacing: -0.01em;
+}
+
+.around {
+	margin-top: 1rem;
+}
+
+.tl-frame {
+	margin: 0.75rem 0 0;
+	border: 1px solid var(--hairline);
+	border-radius: 8px;
+	background: var(--surface-low);
+	overflow: hidden;
+}
+
+.tl-shot {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 1170 / 550;
+}
+
+.tl-shot + .tl-shot {
+	border-top: 1px solid var(--hairline);
+}
+
+html:not(.no-js) .tl-shot:not([data-on]) {
+	display: none;
+}
+
+.tl-toggle {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-top: 1rem;
+}
+
+.tl-notes {
+	display: grid;
+	gap: 1rem;
+	margin-top: 1rem;
+	align-items: start;
+}
+
+.tl-notes .life-detail,
+.tl-notes .road-list {
+	margin-top: 0;
 }
 
 .path {
@@ -1026,6 +1073,12 @@ h2 {
 	opacity: 0.55;
 }
 
+.phases li.active-phase {
+	border-style: dashed;
+	border-color: var(--primary);
+	background: color-mix(in oklab, var(--primary) 4%, var(--surface-low));
+}
+
 .phases .mono {
 	color: var(--primary);
 }
@@ -1173,6 +1226,34 @@ h2 {
 		grid-template-columns: 1fr 1fr;
 	}
 
+	.shot-wide {
+		grid-column: 1 / -1;
+	}
+
+	.shot-wide .diagram-shot {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
+	.shot-wide .diagram-shot img {
+		height: 100%;
+		border-bottom: 0;
+		border-right: 1px solid var(--hairline);
+	}
+
+	.shot-wide .shot-body {
+		align-content: center;
+		padding: 1.25rem 1.5rem;
+	}
+
+	.road-split.road-split-3 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.tl-notes {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
 	.doc-picks {
 		grid-template-columns: repeat(5, minmax(0, 1fr));
 	}
@@ -1244,7 +1325,8 @@ h2 {
 	.tour,
 	.arch,
 	.process,
-	#agent {
+	#agent,
+	#timeline {
 		scroll-margin-top: 6.25rem;
 	}
 
