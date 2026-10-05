@@ -93,7 +93,7 @@
       "sublabel": "GET, overlap window",
       "stage": 0,
       "row": 2,
-      "tag": "1.3.0",
+      "tag": "API 0014",
       "width": 146
     },
     {
@@ -143,7 +143,7 @@
       "sublabel": "split at midnight",
       "stage": 2,
       "row": 2,
-      "tag": "ADR-0028",
+      "tag": "session zone",
       "width": 140
     },
     {
@@ -163,7 +163,7 @@
       "sublabel": "Days · Projects · Rhythm",
       "stage": 3,
       "row": 2,
-      "tag": "1.3.0",
+      "tag": "ADR-0028",
       "width": 122
     }
   ],
