@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#0b1326" />
+		<title>Vynno — Lab</title>
+		<meta name="description" content="Write it down, then let the agent build. The docs are the control plane." />
+		<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+		<link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/tokens.css" />
+		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="../css/components.css" />
+		<link rel="stylesheet" href="../css/pages.css" />
+		<script>
+			document.documentElement.classList.remove("no-js");
+		</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<header class="top">
+			<div class="wrap top-inner">
+				<a class="brand" href="../">
+					<svg class="mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+						<path d="M25.33 23.55A12 12 0 1 1 25.33 8.45L21.6 11.47A7.2 7.2 0 1 0 21.6 20.53Z" />
+						<path d="M21.45 11.3L29.2 16L21.45 20.7L24.4 16Z" />
+					</svg>
+					<span class="wordmark" translate="no">Vynno</span>
+				</a>
+				<nav class="site-nav" aria-label="Primary">
+					<a class="nav-product" href="../#tour">Product</a>
+					<a href="../architecture/">Architecture</a>
+					<a href="../lab/" aria-current="page">Lab</a>
+				</nav>
+				<a class="icon-btn" href="https://github.com/EmilM32/vynno" aria-label="Vynno on GitHub">
+					<svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true">
+						<path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.68 7.68 0 0 1 8 4.77c.68.003 1.36.092 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+					</svg>
+				</a>
+			</div>
+		</header>
+		<div class="doc">
+			<aside class="toc">
+				<a class="back-link" href="../">← Vynno</a>
+				<nav class="toc-desktop" aria-label="On this page">
+					<ol>
+					<li><a href="#lab-method">Agents write. I review.</a></li>
+					<li><a href="#write-title">Write first</a></li>
+					<li><a href="#own-title">Who owns what</a></li>
+					<li><a href="#road-title">Roadmap</a></li>
+					<li><a href="#adr-title">Decisions that stuck</a></li>
+					<li><a href="#screens">Screens</a></li>
+				</ol>
+				</nav>
+				<details class="toc-mobile">
+					<summary>On this page</summary>
+					<nav aria-label="On this page">
+						<ol>
+					<li><a href="#lab-method">Agents write. I review.</a></li>
+					<li><a href="#write-title">Write first</a></li>
+					<li><a href="#own-title">Who owns what</a></li>
+					<li><a href="#road-title">Roadmap</a></li>
+					<li><a href="#adr-title">Decisions that stuck</a></li>
+					<li><a href="#screens">Screens</a></li>
+				</ol>
+					</nav>
+				</details>
+			</aside>
+			<main id="main" class="doc-main">
+				<header class="page-head" id="process">
+					<p class="label">process</p>
+					<h1 id="process-title">Write it down, then let the agent build.</h1>
+					<p class="lead">The unusual part is not that agents write code. It is that the docs are the control
+					plane — PRD, domain, contract, ADRs, and plans that exist only while work is in
+					flight.</p>
+				</header>
+<section class="lab-method" id="lab-method" aria-labelledby="lab-method-title">
+				<p class="kicker mono">how it was made</p>
+				<h2 id="lab-method-title">Agents write. I review. The product still has to work.</h2>
+				<p class="section-lede">
+					<span translate="no">Vynno</span> is a daily-driver focus timer and a lab for working
+					with AI. Two goals, side by side: something I will actually use, and a clearer sense of
+					what to delegate, what to read, and how to keep a product coherent.
+				</p>
+				<ol class="steps">
+					<li>
+						<p class="step-n mono">01 plan</p>
+						<p>
+							Agents help shape the work. I decide what ships. Design tokens, brand, and the
+							session model stay human decisions.
+						</p>
+					</li>
+					<li>
+						<p class="step-n mono">02 implement</p>
+						<p>
+							Agents write most of the code. The stack does not change for convenience:
+							SvelteKit, TypeScript, Go, the same dark IDE chrome.
+						</p>
+					</li>
+					<li>
+						<p class="step-n mono">03 review</p>
+						<p>
+							I read the diff. If it would not survive a workday on the timer, it does not
+							land. Agent output is held to the same rules as everything else.
+						</p>
+					</li>
+				</ol>
+			</section>
+<article class="block" aria-labelledby="write-title">
+					<h3 id="write-title">Write first</h3>
+					<p class="block-lede" id="pipe-caption">
+						Pick the document the change belongs in. Then implement. Then keep the docs true.
+						Plans are deleted when the work ships; git history is the archive.
+					</p>
+					<ol class="pipeline" aria-describedby="pipe-caption">
+						<li>
+							<span class="pipe-n mono">01</span>
+							<span class="pipe-name">Need</span>
+						</li>
+						<li aria-hidden="true" class="pipe-arrow">→</li>
+						<li>
+							<span class="pipe-n mono">02</span>
+							<span class="pipe-name">Pick the doc</span>
+						</li>
+						<li aria-hidden="true" class="pipe-arrow">→</li>
+						<li>
+							<span class="pipe-n mono">03</span>
+							<span class="pipe-name">Agent implements</span>
+						</li>
+						<li aria-hidden="true" class="pipe-arrow">→</li>
+						<li>
+							<span class="pipe-n mono">04</span>
+							<span class="pipe-name">Read the diff</span>
+						</li>
+						<li aria-hidden="true" class="pipe-arrow">→</li>
+						<li>
+							<span class="pipe-n mono">05</span>
+							<span class="pipe-name">Docs stay true</span>
+						</li>
+					</ol>
+					<ul class="doc-picks">
+						<li>
+							<p class="mono">PRD</p>
+							<p>Vision, goals, non-goals. Not stack, not field names.</p>
+						</li>
+						<li>
+							<p class="mono">domain</p>
+							<p>Entities, lifecycles, invariants the server must enforce.</p>
+						</li>
+						<li>
+							<p class="mono">contract</p>
+							<p>Paths, DTOs, status codes. Amend this before the handler.</p>
+						</li>
+						<li>
+							<p class="mono">ADR</p>
+							<p>Expensive or irreversible choice. Keep the file; amend, don’t rewrite.</p>
+						</li>
+						<li>
+							<p class="mono">plan</p>
+							<p>In-flight only. Move facts into the canonical docs, then delete it.</p>
+						</li>
+					</ul>
+					<p class="caption">
+						<a
+							href="https://github.com/EmilM32/vynno-api/blob/main/docs/working-agreement.md"
+							>Working agreement</a
+						>
+						·
+						<a href="https://github.com/EmilM32/vynno/blob/main/AGENTS.md">Frontend AGENTS.md</a>
+						·
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/AGENTS.md">API AGENTS.md</a>
+						·
+						<a href="../diagrams/write-first.html">Interactive workflow</a>
+					</p>
+				</article>
+
+				<article class="block" aria-labelledby="own-title">
+					<h3 id="own-title">Who owns what</h3>
+					<div class="own">
+						<div class="own-col">
+							<p class="mono own-kicker">human</p>
+							<ul>
+								<li>What ships, and whether it survives a workday</li>
+								<li>Brand, session model, stack, repository boundary</li>
+								<li>Accept or reject the ADR</li>
+								<li>Read the diff</li>
+							</ul>
+						</div>
+						<div class="own-col">
+							<p class="mono own-kicker">agent</p>
+							<ul>
+								<li>Most of the code, tests, and runbooks</li>
+								<li>ADR and plan drafts from the templates</li>
+								<li>Follow <code class="path">AGENTS.md</code> and the contract</li>
+								<li>
+									Read one account’s history through the local MCP. Cannot start, stop, or edit
+									a session from it.
+								</li>
+								<li>Do not invent endpoints or rewrite history</li>
+							</ul>
+						</div>
+					</div>
+				</article>
+
+				<article class="block" aria-labelledby="road-title">
+					<h3 id="road-title">Roadmap</h3>
+					<p class="block-lede">
+						API phases 0–4 shipped, then profile, seed, activity types, session mutate, mail,
+						and Swagger on the same host. Phase 5 is under way, one contract amendment at a time.
+					</p>
+					<ol class="phases" aria-label="API phases">
+						<li class="done">
+							<span class="mono">0</span>
+							<span>Plan</span>
+						</li>
+						<li class="done">
+							<span class="mono">1</span>
+							<span>Scaffold</span>
+						</li>
+						<li class="done">
+							<span class="mono">2</span>
+							<span>/v1</span>
+						</li>
+						<li class="done">
+							<span class="mono">3</span>
+							<span>Cookie auth</span>
+						</li>
+						<li class="done">
+							<span class="mono">4</span>
+							<span>Local prod</span>
+						</li>
+						<li class="active-phase" aria-current="step">
+							<span class="mono">5</span>
+							<span>In progress</span>
+						</li>
+					</ol>
+					<div class="road-split road-split-3">
+						<div>
+							<p class="mono tree-kicker">shipped after phase 4</p>
+							<ul class="road-list">
+								<li>Profile and avatar</li>
+								<li>Playground seed / reset on <code class="path">vynno_dev</code></li>
+								<li>User-defined activity types</li>
+								<li>Session edit, delete, manual entry</li>
+								<li>Cursor pagination, email login, outbound mail, Swagger</li>
+								<li>Read-only MCP for one account</li>
+								<li>Strict JSON, bounded text, auth rate limits</li>
+							</ul>
+						</div>
+						<div>
+							<p class="mono tree-kicker">phase 5 so far</p>
+							<ul class="road-list">
+								<li>Account prefs, <code class="path">/me/prefs</code></li>
+								<li>Change password or email while signed in</li>
+								<li>Day totals, <code class="path">/stats/days</code></li>
+								<li>
+									<code class="path">from</code> / <code class="path">to</code> window on
+									<code class="path">GET /sessions</code>
+								</li>
+							</ul>
+						</div>
+						<div>
+							<p class="mono tree-kicker">later / open</p>
+							<ul class="road-list dim">
+								<li>Multi-user workspaces</li>
+								<li>OAuth / passwordless / 2FA</li>
+								<li>Desktop Quick Command panel and top bar</li>
+								<li>A Task entity; default activity type</li>
+							</ul>
+						</div>
+					</div>
+					<p class="caption">
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/roadmap.md"
+							>API roadmap</a
+						>
+						·
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/backlog.md">Backlog</a>
+						·
+						<a href="https://github.com/EmilM32/vynno/blob/main/docs/open.md">Frontend open work</a>
+					</p>
+				</article>
+
+				<article class="block" aria-labelledby="adr-title">
+					<h3 id="adr-title">Decisions that stuck</h3>
+					<p class="block-lede">
+						A curated set. Each card is the decision in one line; open it for context and the
+						rejected alternative. Full indexes stay on GitHub.
+					</p>
+					<div class="adr-filters" role="group" aria-label="Filter ADRs">
+						<button type="button" class="filter-btn" data-filter="all" aria-pressed="true">
+							All
+						</button>
+						<button type="button" class="filter-btn" data-filter="frontend" aria-pressed="false">
+							Frontend
+						</button>
+						<button type="button" class="filter-btn" data-filter="api" aria-pressed="false">
+							API
+						</button>
+					</div>
+					<div class="adr-grid">
+						<details class="adr" data-side="frontend" open>
+							<summary>
+								<span class="adr-id mono">FE 0001</span>
+								<span class="adr-title">SvelteKit, TypeScript, Tailwind</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Dense, keyboard-first UI in a frontend-only repo. SvelteKit maps routes to
+									screens; Tailwind maps onto the design tokens.
+								</p>
+								<p class="caption">Not React/Next, Vue, or plain Svelte without Kit.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0001-frontend-stack.md"
+										>ADR-0001</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend api">
+							<summary>
+								<span class="adr-id mono">FE 0002 · API 0002</span>
+								<span class="adr-title">Separate repositories</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									UI and API do not share a repo, a process, or a package. The shared language
+									is the HTTP JSON contract.
+								</p>
+								<p class="caption">Not a full-stack monorepo, not a BaaS from day one.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0002-frontend-only-separation.md"
+										>Frontend</a
+									>
+									·
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0002-separate-repository.md"
+										>API</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0010</span>
+								<span class="adr-title">DTO-first HTTP JSON</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Domain types stay UI-facing. Wire JSON is Valibot schemas plus mappers. No
+									SvelteKit remote functions.
+								</p>
+								<p class="caption">UI names like <code class="path">isArchived</code> do not leak onto the wire.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0010-http-json-contract.md"
+										>ADR-0010</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0011</span>
+								<span class="adr-title">SSR and a same-origin BFF</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									First paint comes from <code class="path">+layout.server.ts</code>. Stores
+									are request-scoped on the server. The browser calls
+									<code class="path">/v1</code>; Kit forwards the cookie.
+								</p>
+								<p class="caption">Not a client-only SPA with module singletons.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0011-ssr-session-state.md"
+										>ADR-0011</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend api">
+							<summary>
+								<span class="adr-id mono">FE 0014 · API 0011</span>
+								<span class="adr-title">Local production, no cloud</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Daily driver is this machine: Caddy on
+									<code class="path">vynno.localhost</code>, adapter-node, compiled API, Compose
+									Postgres. Availability is “the laptop is on.”
+								</p>
+								<p class="caption">A public host would be a new ADR, not a silent deploy.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0014-local-production-spa.md"
+										>Frontend</a
+									>
+									·
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0011-local-production-host.md"
+										>API</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0021</span>
+								<span class="adr-title">Insights uses an explicit civil range</span>
+								<span class="adr-status mono">amended</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Week, 2 weeks, month, or custom From–To. Prev/next shift the grain. Range is
+									view-local — leaving the screen resets to this week. The donut header compares
+									with the same elapsed span of the previous period.
+								</p>
+								<p class="caption">
+									A past range reads <code class="path">/stats/days</code> instead of paging
+									history. No chart-shaped endpoint.
+								</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0021-insights-range.md"
+										>ADR-0021</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0022</span>
+								<span class="adr-title">Logs list filters</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Date presets plus custom, multi-select projects and activities. Empty
+									selection means all. Combined with search by AND.
+								</p>
+								<p class="caption">View-local. The project dossier reuses the activity facet.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0022-logs-filters.md"
+										>ADR-0022</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0023</span>
+								<span class="adr-title">Logs grouped-by-task layout</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Entries stays the default. Grouped merges same-ticket (else same project +
+									note) sessions inside a day, with count and total duration.
+								</p>
+								<p class="caption">No API change. Expand a summary to the constituent rows.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0023-logs-grouped-view.md"
+										>ADR-0023</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend api">
+							<summary>
+								<span class="adr-id mono">FE 0024 · API 0005</span>
+								<span class="adr-title">Session is a continuous interval</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Status is <code class="path">active | stopped</code>. Verbs are start and
+									stop. A break is stop, then start a new session. Duration is wall-clock.
+								</p>
+								<p class="caption">No paused live state, no <code class="path">pausedMs</code>.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0024-session-continuous-interval.md"
+										>Frontend</a
+									>
+									·
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0005-session-lifecycle.md"
+										>API</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0026</span>
+								<span class="adr-title">Tabs and devices stay in step</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Sibling tabs replay each write over a <code class="path">BroadcastChannel</code>.
+									Another device re-reads the live session when its tab becomes visible. A Stop
+									that loses a race reconciles instead of failing.
+								</p>
+								<p class="caption">Not polling, and not SSE — no new API surface.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0026-session-sync.md"
+										>ADR-0026</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="frontend">
+							<summary>
+								<span class="adr-id mono">FE 0027</span>
+								<span class="adr-title">Year heatmap; weekends never break a streak</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									53 weeks from <code class="path">/stats/days</code>, shaded against the daily
+									target. A streak is days with any tracked time; an untracked weekday ends it.
+								</p>
+								<p class="caption">Not GitHub-style every-day streaks — they reward working weekends.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno/blob/main/docs/adr/0027-year-heatmap-streaks.md"
+										>ADR-0027</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0001</span>
+								<span class="adr-title">Go + Gin, domain isolated</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									<code class="path">internal/domain</code> must not import Gin or the
+									database driver. Handlers stay thin; lifecycle tests do not need HTTP.
+								</p>
+								<p class="caption">Gin binders may decode JSON; they are not the source of truth for contract codes.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0001-backend-stack.md"
+										>ADR-0001</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0008</span>
+								<span class="adr-title">HttpOnly cookie, not JWT</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Opaque session token, SHA-256 on the server, cookie
+									<code class="path">vynno_session</code>. Login JSON is
+									<code class="path">{ profile }</code> only. SPA never sends
+									<code class="path">Authorization</code>.
+								</p>
+								<p class="caption">Bearer exists for curl and tests. XSS cannot read the secret.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0008-authentication.md"
+										>ADR-0008</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0005</span>
+								<span class="adr-title">One live session, verbs only</span>
+								<span class="adr-status mono">amended</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									At most one <code class="path">active</code> row. A session is a continuous
+									interval; stop is the only live verb. Stopped rows are mutable (edit, delete,
+									manual entry).
+								</p>
+								<p class="caption">Do not auto-stop. Do not PATCH status. No pause.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0005-session-lifecycle.md"
+										>ADR-0005</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0009</span>
+								<span class="adr-title">Postgres, sqlc, goose</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Durable rows so reload and a second device agree. In-memory is a test double.
+									Migrations are plain SQL, applied at boot.
+								</p>
+								<p class="caption">Not GORM as the source of truth.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0009-persistence.md"
+										>ADR-0009</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0015</span>
+								<span class="adr-title">SMTP via a Mailer port</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Register confirmation and password reset leave through
+									<code class="path">internal/mail</code>. Daily driver is Mailpit. No
+									Resend/SES SDK.
+								</p>
+								<p class="caption">Domain does not import SMTP. Tests use discard.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0015-outbound-email.md"
+										>ADR-0015</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0016</span>
+								<span class="adr-title">Read-only MCP for one account</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									Local stdio in <code class="path">cmd/mcp</code>. One session token, one
+									account, read-only column allowlist. The SPA contract does not change.
+								</p>
+								<p class="caption">
+									Not a stock Postgres MCP — arbitrary SQL, secret columns, every account.
+								</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0016-readonly-mcp.md"
+										>ADR-0016</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0017</span>
+								<span class="adr-title">Account prefs, not device prefs</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									<code class="path">GET</code> / <code class="path">PATCH /me/prefs</code>: daily
+									target and default project follow the user. Theme and locale stay on the device,
+									applied before first paint.
+								</p>
+								<p class="caption">Not fields on the profile, not a free-form key-value blob.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0017-account-prefs.md"
+										>ADR-0017</a
+									>
+								</p>
+							</div>
+						</details>
+						<details class="adr" data-side="api">
+							<summary>
+								<span class="adr-id mono">API 0018</span>
+								<span class="adr-title">Day totals, computed per request</span>
+								<span class="adr-status mono">accepted</span>
+							</summary>
+							<div class="adr-body">
+								<p>
+									<code class="path">/stats/days</code> sums tracked time per local date, project,
+									and activity in the client’s IANA zone. The server sums; the SPA shapes.
+								</p>
+								<p class="caption">Not one endpoint per chart, not a rollup table.</p>
+								<p class="caption">
+									<a
+										href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0018-day-totals.md"
+										>ADR-0018</a
+									>
+								</p>
+							</div>
+						</details>
+					</div>
+					<p class="caption">
+						<a href="https://github.com/EmilM32/vynno/blob/main/docs/adr/README.md"
+							>All frontend ADRs</a
+						>
+						·
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/README.md"
+							>All API ADRs</a
+						>
+					</p>
+				</article>
+				<section class="block" id="screens" aria-label="Screens">
+					<p class="label">the product</p>
+					<ul class="shots">
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/dashboard-year.webp"
+								width="1440"
+								height="900"
+								alt="Last 12 months heatmap on the Dashboard, shaded against the daily target, with current streak, best streak, active days, and total."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/dashboard</code>
+								<p>
+									Last 12 months, shaded against the daily target. Weekends off never break a
+									streak.
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/logs.webp"
+								width="1440"
+								height="900"
+								alt="Logs list with date, project, and activity filters, Export and Add entry, and an in-progress row."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/logs</code>
+								<p>
+									Search and filters. Gaps of an hour or more show as untracked. Export CSV,
+									JSON, or a timesheet.
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/logs-grouped.webp"
+								width="1440"
+								height="900"
+								alt="Logs grouped layout summing same-ticket sessions in a day with an n× count."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/logs</code>
+								<p>Grouped layout: same ticket in a day becomes one total.</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/insights.webp"
+								width="1440"
+								height="900"
+								alt="Insights for two weeks: a project donut with the change against the previous period, time by activity, and the top of the timeline."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/insights</code>
+								<p>
+									Time by project and activity, against the same span of the previous period.
+									A past range is one request.
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/projects.webp"
+								width="1440"
+								height="900"
+								alt="Projects list with color chips, codes, Active/Archived tabs, and row actions."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/projects</code>
+								<p>Named work with a color. Rows open the project dossier.</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/project.webp"
+								width="1440"
+								height="900"
+								alt="Project dossier with KPIs, period hour bars, activity split, and entries."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/projects/[id]</code>
+								<p>One project’s hours, period, and entries.</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/settings.webp"
+								width="1440"
+								height="900"
+								alt="Settings with profile, the collapsed Security card, and activity types."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">/settings</code>
+								<p>
+									Target and default project follow the account. Theme, language, and reminders
+									stay on the device.
+								</p>
+							</figcaption>
+						</figure>
+					</li>
+<li>
+						<figure class="shot">
+							<img
+								src="../assets/screens/palette.webp"
+								width="1440"
+								height="900"
+								alt="Command palette over the Dashboard: Stop session for the live timer, then recent tasks to resume."
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>
+								<code class="path">⌘K</code>
+								<p>Start, stop, resume, or open a project without leaving the keyboard.</p>
+							</figcaption>
+						</figure>
+					</li>
+					</ul>
+				</section>
+
+			</main>
+		</div>
+		<footer class="foot">
+			<div class="wrap foot-cta">
+				<p class="foot-brand">
+					<span class="wordmark" translate="no">Vynno</span>
+					<span class="mono muted"> — VIN-oh</span>
+				</p>
+				<p class="foot-title">The source is public.</p>
+				<a class="btn btn-primary press" href="https://github.com/EmilM32/vynno">View on GitHub</a>
+				<p class="foot-links">
+					<a href="https://github.com/EmilM32/vynno-api">vynno-api</a>
+					<a href="https://github.com/EmilM32/vynno/blob/main/README.md">README</a>
+					<a href="https://github.com/EmilM32/vynno/blob/main/docs/brand.md">Brand</a>
+					<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/working-agreement.md">Working agreement</a>
+				</p>
+				<p class="foot-meta"><span class="mono">v1.3.0</span> · Not a hosted app</p>
+			</div>
+		</footer>
+
+		<script type="module" src="../js/details.js"></script>
+	</body>
+</html>
