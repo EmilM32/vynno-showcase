@@ -27,19 +27,40 @@ test('landing length, fold, type scale, and CTA', async ({ page }) => {
 			const r = el.getBoundingClientRect();
 			return r.top < vh && r.bottom > 0;
 		};
-		const win = document.querySelector('.hero-media .window').getBoundingClientRect();
+		const win = document.querySelector('.window-timer').getBoundingClientRect();
 		const shown = Math.min(win.bottom, vh) - Math.max(win.top, 0);
+		const caption = document.querySelector('.hero-caption').getBoundingClientRect();
 		return {
 			h1: visible('#hero-title'),
 			lead: visible('.hero-copy .lead'),
 			cta: visible('.hero-actions .btn-primary'),
 			windowShown: shown,
+			captionShown: caption.top < vh && caption.bottom > 0 && caption.height > 0,
+			h1Size: parseFloat(getComputedStyle(document.querySelector('#hero-title')).fontSize),
 		};
 	});
 	expect(fold.h1).toBeTruthy();
 	expect(fold.lead).toBeTruthy();
 	expect(fold.cta).toBeTruthy();
-	expect(fold.windowShown).toBeGreaterThanOrEqual(200);
+	expect(fold.windowShown).toBeGreaterThanOrEqual(440);
+	expect(fold.h1Size).toBeLessThanOrEqual(73);
+	expect(fold.h1Size).toBeGreaterThanOrEqual(68);
+	await expect(page.locator('.hero-caption')).toHaveText('Live capture of the daily driver');
+	await expect(page.locator('.window-timer .window-title')).toHaveText('vynno.localhost');
+	await expect(page.locator('.hero-copy .label')).toHaveText(/Focus timer · v1\.3\.0/i);
+	await expect(page.locator('.hero-copy .label')).not.toHaveText(/local-first/i);
+	await expect(page.locator('.hero-copy .lead')).toHaveText(
+		'A local-first focus timer: start a session, tag the project, read your week at a glance.',
+	);
+	await expect(page.locator('.hero-byline')).toHaveText(
+		'Side project by Emil Majer · SvelteKit + Go · built with AI agents',
+	);
+	await expect(page.locator('.status-sep')).toHaveText('·');
+	await expect(page.locator('.status-chip .live-dot')).toHaveCount(1);
+	await expect(page.locator('.status-chip .status-icon')).toHaveCount(1);
+	await expect(page.locator('.window-week')).toBeVisible();
+	const desktopSrc = await page.locator('.window-timer img').evaluate((img) => img.currentSrc);
+	expect(desktopSrc).toContain('hero-timer-desktop.webp');
 
 	const scale = await page.evaluate(() => {
 		const px = (sel) => parseFloat(getComputedStyle(document.querySelector(sel)).fontSize);
@@ -90,6 +111,12 @@ test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 		expect(chip.oneLine).toBeTruthy();
 	}
 	expect(fold.scrollWidth).toBeLessThanOrEqual(fold.clientWidth + 1);
+	const mobileSrc = await page.locator('.window-timer img').evaluate((img) => img.currentSrc);
+	expect(mobileSrc).toContain('hero-timer-mobile.webp');
+	await expect(page.locator('.hero-caption')).toBeVisible();
+	await expect(page.locator('.nav-menu')).toBeVisible();
+	await expect(page.locator('.nav-links')).toBeHidden();
+	await expect(page.locator('.window-timer .window-title')).toHaveText('vynno.localhost');
 });
 
 test('no horizontal scroll from 320px and touch targets', async ({ page }) => {
@@ -98,13 +125,19 @@ test('no horizontal scroll from 320px and touch targets', async ({ page }) => {
 	const metrics = await page.evaluate(() => ({
 		scrollWidth: document.documentElement.scrollWidth,
 		clientWidth: document.documentElement.clientWidth,
-		productHidden: getComputedStyle(document.querySelector('.nav-product')).display === 'none',
+		productHidden: getComputedStyle(document.querySelector('.nav-links')).display === 'none',
 		headerNowrap: getComputedStyle(document.querySelector('.site-nav')).flexWrap === 'nowrap',
 		icon: document.querySelector('.icon-btn').getBoundingClientRect(),
 	}));
 	expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
 	expect(metrics.productHidden).toBeTruthy();
 	expect(metrics.headerNowrap).toBeTruthy();
+	const menu = page.locator('.nav-menu');
+	await expect(menu).toBeVisible();
+	await menu.locator('summary').click();
+	await expect(menu.locator('a', { hasText: 'Product' })).toBeVisible();
+	await expect(menu.locator('a', { hasText: 'Architecture' })).toBeVisible();
+	await expect(menu.locator('a', { hasText: 'Lab' })).toBeVisible();
 	expect(metrics.icon.width).toBeGreaterThanOrEqual(44);
 	expect(metrics.icon.height).toBeGreaterThanOrEqual(44);
 });
