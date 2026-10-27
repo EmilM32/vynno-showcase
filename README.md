@@ -22,7 +22,7 @@ Pages publishes `diagrams/*.html` only; the sources stay in the repo. Thumbnails
 npx --yes serve .
 ```
 
-Also check the GitHub Pages subpath: assets use relative URLs (`./styles.css`), so the same files work at `https://<user>.github.io/vynno-showcase/`.
+Also check the GitHub Pages subpath: styles, scripts, and screenshots use relative URLs, so the same files work at `https://<user>.github.io/vynno-showcase/`. The landing page is `index.html`; architecture and lab are `architecture/` and `lab/`.
 
 ## Deploy
 

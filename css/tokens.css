@@ -1,0 +1,43 @@
+:root {
+	color-scheme: dark;
+
+	--bg: #0b1326;
+	--surface: #171f33;
+	--surface-low: #131b2e;
+	--surface-high: #222a3d;
+	--hairline: #3e484f;
+	--text: #dae2fd;
+	--muted: #bdc8d1;
+	--primary: #8ed5ff;
+	--on-primary: #00354a;
+	--live: #4de082;
+
+	--sans: Inter, 'Inter Fallback', ui-sans-serif, system-ui, sans-serif;
+	--mono: 'JetBrains Mono', ui-monospace, monospace;
+
+	--fs-display: clamp(2.75rem, 1.6rem + 4.6vw, 4.5rem);
+	--fs-h2: clamp(1.875rem, 1.4rem + 1.9vw, 2.5rem);
+	--fs-h3: 1.375rem;
+	--fs-lead: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
+	--fs-body: 1.0625rem;
+	--fs-small: 0.875rem;
+	--fs-label: 0.8125rem;
+
+	--space-section: clamp(4rem, 3rem + 5vw, 7.5rem);
+
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+	/* Code tags only. */
+	--radius: 4px;
+
+	--shadow-window: 0 30px 80px -20px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
+	--glow-primary: radial-gradient(60% 50% at 50% 0%, rgb(142 213 255 / 0.14), transparent 70%);
+
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--duration-press: 160ms;
+	--duration-ui: 200ms;
+
+	--wrap: 72rem;
+	--header-h: 64px;
+}

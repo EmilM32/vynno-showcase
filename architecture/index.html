@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#0b1326" />
+		<title>Vynno — Architecture</title>
+		<meta name="description" content="Two repositories. One contract. One machine. SvelteKit, a Go API, and a local read-only MCP." />
+		<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+		<link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="../assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="stylesheet" href="../css/tokens.css" />
+		<link rel="stylesheet" href="../css/base.css" />
+		<link rel="stylesheet" href="../css/components.css" />
+		<link rel="stylesheet" href="../css/pages.css" />
+		<script>
+			document.documentElement.classList.remove("no-js");
+		</script>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<header class="top">
+			<div class="wrap top-inner">
+				<a class="brand" href="../">
+					<svg class="mark" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+						<path d="M25.33 23.55A12 12 0 1 1 25.33 8.45L21.6 11.47A7.2 7.2 0 1 0 21.6 20.53Z" />
+						<path d="M21.45 11.3L29.2 16L21.45 20.7L24.4 16Z" />
+					</svg>
+					<span class="wordmark" translate="no">Vynno</span>
+				</a>
+				<nav class="site-nav" aria-label="Primary">
+					<div class="nav-links">
+						<a class="nav-product" href="../#tour">Product</a>
+						<a href="../architecture/" aria-current="page">Architecture</a>
+						<a href="../lab/">Lab</a>
+					</div>
+					<details class="nav-menu">
+						<summary aria-label="Menu">
+							<svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true">
+								<path fill="currentColor" d="M1 3.25h14v1.5H1zm0 4h14v1.5H1zm0 4h14v1.5H1z" />
+							</svg>
+						</summary>
+						<div class="nav-panel">
+							<a href="../#tour">Product</a>
+							<a href="../architecture/" aria-current="page">Architecture</a>
+							<a href="../lab/">Lab</a>
+						</div>
+					</details>
+				</nav>
+				<a class="icon-btn" href="https://github.com/EmilM32/vynno" aria-label="Vynno on GitHub">
+					<svg viewBox="0 0 16 16" width="22" height="22" aria-hidden="true">
+						<path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.68 7.68 0 0 1 8 4.77c.68.003 1.36.092 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+					</svg>
+				</a>
+			</div>
+		</header>
+		<div class="doc">
+			<aside class="toc">
+				<a class="back-link" href="../">← Vynno</a>
+				<nav class="toc-desktop" aria-label="On this page">
+					<ol>
+					<li><a href="#topo-title">Runtime path</a></li>
+					<li><a href="#agent">Read the hours without opening SQL</a></li>
+					<li><a href="#layers-title">Frontend and API layers</a></li>
+					<li><a href="#domain-title">Domain and session lifecycle</a></li>
+					<li><a href="#seam-title">The contract is the seam</a></li>
+					<li><a href="#diagrams">Explore the diagrams</a></li>
+				</ol>
+				</nav>
+				<details class="toc-mobile">
+					<summary>On this page</summary>
+					<nav aria-label="On this page">
+						<ol>
+					<li><a href="#topo-title">Runtime path</a></li>
+					<li><a href="#agent">Read the hours without opening SQL</a></li>
+					<li><a href="#layers-title">Frontend and API layers</a></li>
+					<li><a href="#domain-title">Domain and session lifecycle</a></li>
+					<li><a href="#seam-title">The contract is the seam</a></li>
+					<li><a href="#diagrams">Explore the diagrams</a></li>
+				</ol>
+					</nav>
+				</details>
+			</aside>
+			<main id="main" class="doc-main">
+				<header class="page-head" id="architecture">
+					<p class="label">architecture</p>
+					<h1 id="arch-title">Two repositories. One contract. One machine.</h1>
+					<p class="lead">The UI is SvelteKit. The API is Go. They never share a process. An agent reads the
+					same Postgres through a local process, <code class="path">cmd/mcp</code>. Daily
+					production is loopback HTTPS on this laptop — not a cloud host.</p>
+				</header>
+<article class="block" aria-labelledby="topo-title">
+					<h2 id="topo-title">Runtime path</h2>
+					<p class="block-lede" id="topo-caption">
+						A request from the daily origin travels five hops. Cookie
+						<code class="path">vynno_session</code> stays first-party because Kit proxies
+						<code class="path">/v1</code>. Select a node.
+					</p>
+
+					<div
+						class="topo"
+						role="group"
+						aria-labelledby="topo-title"
+						aria-describedby="topo-caption"
+					>
+						<p class="topo-rail-label mono">production</p>
+						<div class="topo-prod">
+							<ol class="topo-rail">
+							<li>
+								<button type="button" class="topo-node" data-node="browser" aria-pressed="true">
+									<span class="topo-kicker mono">client</span>
+									<span class="topo-name">Browser</span>
+									<span class="topo-meta mono">vynno.localhost</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="caddy" aria-pressed="false">
+									<span class="topo-kicker mono">tls</span>
+									<span class="topo-name">Caddy</span>
+									<span class="topo-meta mono">:443</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="kit" aria-pressed="false">
+									<span class="topo-kicker mono">ui</span>
+									<span class="topo-name">SvelteKit</span>
+									<span class="topo-meta mono">:27180</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="bff" aria-pressed="false">
+									<span class="topo-kicker mono">proxy</span>
+									<span class="topo-name">/v1 BFF</span>
+									<span class="topo-meta mono">same origin</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="api" aria-pressed="false">
+									<span class="topo-kicker mono">api</span>
+									<span class="topo-name">Go API</span>
+									<span class="topo-meta mono">:27182</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="pg" aria-pressed="false">
+									<span class="topo-kicker mono">db</span>
+									<span class="topo-name">Postgres</span>
+									<span class="topo-meta mono">vynno</span>
+								</button>
+							</li>
+							</ol>
+							<span class="topo-token" aria-hidden="true"></span>
+						</div>
+
+						<p class="topo-rail-label mono">playground</p>
+						<ol class="topo-rail topo-dev">
+							<li>
+								<button type="button" class="topo-node quiet" data-node="dev" aria-pressed="false">
+									<span class="topo-kicker mono">go run</span>
+									<span class="topo-name">Playground</span>
+									<span class="topo-meta mono">:8081</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button
+									type="button"
+									class="topo-node quiet"
+									data-node="pgdev"
+									aria-pressed="false"
+								>
+									<span class="topo-kicker mono">db</span>
+									<span class="topo-name">Postgres</span>
+									<span class="topo-meta mono">vynno_dev</span>
+								</button>
+							</li>
+						</ol>
+
+						<p class="topo-rail-label mono">agent</p>
+						<ol class="topo-rail">
+							<li>
+								<button type="button" class="topo-node" data-node="grok" aria-pressed="false">
+									<span class="topo-kicker mono">client</span>
+									<span class="topo-name">Grok</span>
+									<span class="topo-meta mono">stdio</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="mcp" aria-pressed="false">
+									<span class="topo-kicker mono">mcp</span>
+									<span class="topo-name">cmd/mcp</span>
+									<span class="topo-meta mono">read-only</span>
+								</button>
+							</li>
+							<li aria-hidden="true" class="topo-arrow">→</li>
+							<li>
+								<button type="button" class="topo-node" data-node="mcpdb" aria-pressed="false">
+									<span class="topo-kicker mono">db</span>
+									<span class="topo-name">Postgres</span>
+									<span class="topo-meta mono">vynno</span>
+								</button>
+							</li>
+						</ol>
+
+						<div class="topo-detail" id="topo-detail" role="status">
+							<p class="topo-detail-kicker mono">browser</p>
+							<p>
+								Daily URL is <code class="path">https://vynno.localhost</code>. That origin,
+								<code class="path">:27180</code>, and <code class="path">127.0.0.1</code> do
+								not share the session cookie. Bookmark the hostname, not the port.
+							</p>
+						</div>
+					</div>
+					<p class="caption">
+						<a href="../diagrams/runtime.html">Interactive runtime diagram</a> — the same
+						machine with Mailpit and the Compose boundary.
+					</p>
+				</article>
+
+				<article class="block" id="agent" aria-labelledby="agent-title">
+					<h2 id="agent-title">Read the hours without opening SQL</h2>
+					<p class="block-lede" id="tool-caption">
+						<code class="path">cmd/mcp</code> is a stdio process on this machine. It answers
+						questions about one account’s history. The browser path and the
+						<code class="path">/v1</code> contract stay as they are. Select a tool.
+					</p>
+					<div class="agent-grid">
+						<div
+							class="life-card"
+							id="tool-card"
+							role="group"
+							aria-labelledby="agent-title"
+							aria-describedby="tool-caption"
+						>
+							<p class="mono tree-kicker">tools</p>
+							<div class="tool-list">
+								<button
+									type="button"
+									class="tool-btn"
+									data-tool="vynno_whoami"
+									aria-pressed="true"
+								>
+									<span class="mono">vynno_whoami</span>
+								</button>
+								<button
+									type="button"
+									class="tool-btn"
+									data-tool="vynno_list_projects"
+									aria-pressed="false"
+								>
+									<span class="mono">vynno_list_projects</span>
+								</button>
+								<button
+									type="button"
+									class="tool-btn"
+									data-tool="vynno_list_sessions"
+									aria-pressed="false"
+								>
+									<span class="mono">vynno_list_sessions</span>
+								</button>
+								<button
+									type="button"
+									class="tool-btn"
+									data-tool="vynno_get_active_session"
+									aria-pressed="false"
+								>
+									<span class="mono">vynno_get_active_session</span>
+								</button>
+								<button
+									type="button"
+									class="tool-btn"
+									data-tool="vynno_summarize_time"
+									aria-pressed="false"
+								>
+									<span class="mono">vynno_summarize_time</span>
+								</button>
+							</div>
+							<div class="life-detail" id="tool-detail" role="status">
+								<p class="topo-detail-kicker tool-kicker mono">vynno_whoami</p>
+								<p>
+									Email and display name of the account the token names. Every other tool
+									returns only that history.
+								</p>
+							</div>
+						</div>
+						<div class="tree-card">
+							<p class="mono tree-kicker">boundaries</p>
+							<ul class="road-list">
+								<li>Read-only. Start and stop stay on <code class="path">/v1</code>.</li>
+								<li>One account. A token for A cannot read B.</li>
+								<li>Allowlist. Secret columns and avatar bytes stay out.</li>
+								<li>Local. Not an HTTP route, and not in the JSON contract.</li>
+							</ul>
+						</div>
+					</div>
+					<p class="caption">
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/adr/0016-readonly-mcp.md"
+							>ADR-0016</a
+						>
+						·
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/README.md#agent-access"
+							>Agent access</a
+						>
+					</p>
+				</article>
+
+				<article class="block" aria-labelledby="layers-title">
+					<h2 id="layers-title">Frontend and API layers</h2>
+					<p class="block-lede">
+						SvelteKit owns screens and first paint. Go owns rules and rows. Each stack is a
+						cake: the top talks HTTP, the bottom must not import the top.
+					</p>
+					<div class="layers">
+						<div class="layer-col">
+							<p class="layer-repo mono">
+								<a href="https://github.com/EmilM32/vynno">vynno</a>
+								<span class="muted">frontend</span>
+							</p>
+							<ol class="layer-stack">
+								<li>
+									<span class="layer-name">routes</span>
+									<span class="layer-meta"
+										>/timer · /dashboard · /logs · /insights · /projects · /projects/[id] ·
+										/settings</span
+									>
+								</li>
+								<li>
+									<span class="layer-name">shell</span>
+									<span class="layer-meta">SideNav, BottomNav, SessionChip, command palette</span>
+								</li>
+								<li>
+									<span class="layer-name">stores</span>
+									<span class="layer-meta"
+										>session (synced across tabs), auth, prefs, session window — request-scoped
+										on SSR, client singleton after hydrate</span
+									>
+								</li>
+								<li>
+									<span class="layer-name">HTTP + DTOs</span>
+									<span class="layer-meta"
+										>repository, Valibot schemas, mappers DTO ↔ domain</span
+									>
+								</li>
+								<li>
+									<span class="layer-name">domain types</span>
+									<span class="layer-meta">UI-facing. Wire JSON is a separate layer.</span>
+								</li>
+							</ol>
+						</div>
+						<div class="layer-col">
+							<p class="layer-repo mono">
+								<a href="https://github.com/EmilM32/vynno-api">vynno-api</a>
+								<span class="muted">backend</span>
+							</p>
+							<ol class="layer-stack">
+								<li>
+									<span class="layer-name">httpserver</span>
+									<span class="layer-meta">Gin, error envelope, OpenAPI from route()</span>
+								</li>
+								<li>
+									<span class="layer-name">service</span>
+									<span class="layer-meta">use cases; depends on Store and Mailer</span>
+								</li>
+							</ol>
+							<ol class="layer-split" aria-label="Domain, store, and mail sit under service">
+								<li>
+									<span class="layer-name">domain</span>
+									<span class="layer-meta">no Gin, no SQL</span>
+								</li>
+								<li>
+									<span class="layer-name">store</span>
+									<span class="layer-meta">sqlc + goose</span>
+								</li>
+								<li>
+									<span class="layer-name">mail</span>
+									<span class="layer-meta">SMTP port</span>
+								</li>
+							</ol>
+						</div>
+					</div>
+					<p class="caption">
+						SSR seed comes from <code class="path">+layout.server.ts</code>. Domain rules are
+						enforced on the server; the client is not trusted.
+					</p>
+				</article>
+
+				<article class="block" aria-labelledby="domain-title">
+					<h2 id="domain-title">Domain and session lifecycle</h2>
+					<p class="block-lede" id="life-caption">
+						One user, isolated. No teams. At most one live session. A second start is
+						<code class="path">409 session_already_active</code> — the server does not
+						auto-stop. A break is stop, then start. Select a state.
+					</p>
+					<div class="domain-grid">
+						<div class="tree-card">
+							<p class="mono tree-kicker">entities</p>
+							<ul class="tree">
+								<li>
+									<span class="tree-node">User</span>
+									<ul>
+										<li>
+											<span class="tree-node">Profile</span>
+											<span class="tree-note">display name, email, avatar</span>
+										</li>
+										<li>
+											<span class="tree-node">Prefs</span>
+											<span class="tree-note">daily target, default project</span>
+										</li>
+										<li>
+											<span class="tree-node">Project*</span>
+											<span class="tree-note">name, color, code, archived</span>
+										</li>
+										<li>
+											<span class="tree-node">ActivityType*</span>
+											<span class="tree-note">user-owned dictionary</span>
+										</li>
+										<li>
+											<span class="tree-node">TimeSession*</span>
+											<span class="tree-note">note, ticket, timestamps; active or stopped</span>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<p class="caption">
+								No Task table. “Recent tasks” are reconstructed from recent sessions. Theme and
+								language stay on the device, not on the account.
+							</p>
+						</div>
+						<div
+							class="life-card"
+							role="group"
+							aria-labelledby="domain-title"
+							aria-describedby="life-caption"
+						>
+							<p class="mono tree-kicker">lifecycle</p>
+							<div class="life">
+								<button type="button" class="life-state" data-state="idle" aria-pressed="false">
+									<span class="mono">idle</span>
+								</button>
+								<span class="life-edge" aria-hidden="true"
+									>start<span class="life-arrow">→</span></span
+								>
+								<button type="button" class="life-state on" data-state="active" aria-pressed="true">
+									<span class="mono">active</span>
+								</button>
+								<span class="life-edge" aria-hidden="true"
+									>stop<span class="life-arrow">→</span></span
+								>
+								<button type="button" class="life-state" data-state="stopped" aria-pressed="false">
+									<span class="mono">stopped</span>
+								</button>
+							</div>
+							<div class="life-detail" id="life-detail" role="status">
+								<p class="topo-detail-kicker mono">active</p>
+								<p>
+									Elapsed is <code class="path">now − startedAt</code>. Stop is the only live
+									verb. Status is never patched.
+								</p>
+							</div>
+						</div>
+					</div>
+					<p class="caption">
+						<a href="../diagrams/session-lifecycle.html">Interactive lifecycle</a> — the 409
+						branch, manual entry, and delete.
+					</p>
+				</article>
+
+				<article class="block" aria-labelledby="seam-title">
+					<h2 id="seam-title">The contract is the seam</h2>
+					<p class="block-lede">
+						A wire-format change is a paired change. Neither repo invents a field the other
+						does not know.
+					</p>
+					<div class="seam">
+						<div class="seam-side">
+							<p class="mono">vynno</p>
+							<p><code class="path">docs/api-contract.md</code></p>
+							<p><code class="path">src/lib/api/schemas</code></p>
+							<p class="caption">Valibot is the executable source of truth on the client.</p>
+						</div>
+						<div class="seam-mid" aria-hidden="true">
+							<span class="seam-bar"></span>
+							<p class="mono">JSON /v1</p>
+							<p class="caption">camelCase · cookie · error envelope</p>
+						</div>
+						<div class="seam-side">
+							<p class="mono">vynno-api</p>
+							<p><code class="path">docs/api-contract.md</code></p>
+							<p><code class="path">internal/httpserver</code></p>
+							<p class="caption">OpenAPI is generated from Gin <code class="path">route()</code>.</p>
+						</div>
+					</div>
+					<p class="caption">
+						<a href="https://github.com/EmilM32/vynno/blob/main/docs/api-contract.md"
+							>Frontend contract</a
+						>
+						·
+						<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/api-contract.md"
+							>API contract</a
+						>
+						·
+						<a href="../diagrams/start-session.html">One request across the seam</a>
+					</p>
+				</article>
+
+				<article class="block" id="diagrams" aria-labelledby="diagrams-title">
+					<h2 id="diagrams-title">Explore the diagrams</h2>
+					<p class="block-lede">
+						Each one opens as its own page: pan, zoom, search, trace a relationship, or play
+						the guided views. Facts come from the docs and code in both repos.
+					</p>
+					<ul class="shots">
+						<li>
+							<a class="shot diagram-shot" href="../diagrams/runtime.html">
+								<img
+									src="../assets/diagrams/runtime.webp"
+									width="960"
+									height="540"
+									alt="Architecture diagram: browser, Caddy, SvelteKit, Go API and Postgres, plus the playground and the read-only MCP."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">architecture</span>
+									<span class="diagram-name">Runtime on one machine</span>
+									<span class="diagram-note">Daily path, playground on :8081, and the agent’s read-only lane.</span>
+								</span>
+							</a>
+						</li>
+						<li>
+							<a class="shot diagram-shot" href="../diagrams/start-session.html">
+								<img
+									src="../assets/diagrams/start-session.webp"
+									width="960"
+									height="540"
+									alt="Sequence diagram of POST /v1/sessions from the browser through the BFF, auth, handler, service and Postgres."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">sequence</span>
+									<span class="diagram-name">Start a session</span>
+									<span class="diagram-note">Cookie, token lookup, domain rules, 201 — or 409 without an auto-stop.</span>
+								</span>
+							</a>
+						</li>
+						<li>
+							<a class="shot diagram-shot" href="../diagrams/session-lifecycle.html">
+								<img
+									src="../assets/diagrams/session-lifecycle.webp"
+									width="960"
+									height="540"
+									alt="Lifecycle diagram: idle, start, active, stopped, with a 409 conflict, manual entry and delete."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">lifecycle</span>
+									<span class="diagram-name">Time session lifecycle</span>
+									<span class="diagram-note">Two verbs, one live row, mutable log entries.</span>
+								</span>
+							</a>
+						</li>
+						<li>
+							<a class="shot diagram-shot" href="../diagrams/write-first.html">
+								<img
+									src="../assets/diagrams/write-first.webp"
+									width="960"
+									height="540"
+									alt="Workflow diagram across human, docs and agent lanes: need, pick the doc, agent implements, read the diff, docs stay true."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">workflow</span>
+									<span class="diagram-name">Write first, then build</span>
+									<span class="diagram-note">Docs as the control plane, with a review gate that sends work back.</span>
+								</span>
+							</a>
+						</li>
+						<li class="shot-wide">
+							<a class="shot diagram-shot" href="../diagrams/insights-data.html">
+								<img
+									src="../assets/diagrams/insights-data.webp"
+									width="960"
+									height="540"
+									alt="Dataflow diagram: an Insights range reads loaded history, day totals, or a session window, then feeds the totals charts and the timeline."
+									loading="lazy"
+									decoding="async"
+								/>
+								<span class="shot-body">
+									<span class="diagram-type">dataflow</span>
+									<span class="diagram-name">Insights data path</span>
+									<span class="diagram-note">Today reads loaded history. A past range reads day totals and its own session window.</span>
+								</span>
+							</a>
+						</li>
+					</ul>
+					<p class="caption">
+						Rendered with
+						<a href="https://github.com/tt-a1i/archify">archify</a>. Sources live in
+						<code class="path">diagrams/src</code>.
+					</p>
+				</article>
+
+			</main>
+		</div>
+		<footer class="foot">
+			<div class="wrap foot-cta">
+				<p class="foot-brand">
+					<span class="wordmark" translate="no">Vynno</span>
+					<span class="mono muted"> — VIN-oh</span>
+				</p>
+				<p class="foot-title">The source is public.</p>
+				<a class="btn btn-primary press" href="https://github.com/EmilM32/vynno">View on GitHub</a>
+				<p class="foot-links">
+					<a href="https://github.com/EmilM32/vynno-api">vynno-api</a>
+					<a href="https://github.com/EmilM32/vynno/blob/main/README.md">README</a>
+					<a href="https://github.com/EmilM32/vynno/blob/main/docs/brand.md">Brand</a>
+					<a href="https://github.com/EmilM32/vynno-api/blob/main/docs/working-agreement.md">Working agreement</a>
+				</p>
+				<p class="foot-meta"><span class="mono">v1.3.0</span> · Not a hosted app</p>
+			</div>
+		</footer>
+<template id="topo-copy">
+			<p data-node="browser">
+				Daily URL is <code class="path">https://vynno.localhost</code>. That origin,
+				<code class="path">:27180</code>, and <code class="path">127.0.0.1</code> do not share
+				the session cookie. Bookmark the hostname, not the port.
+			</p>
+			<p data-node="caddy">
+				Loopback Caddy terminates TLS on <code class="path">127.0.0.1:443</code> and redirects
+				<code class="path">:80</code>. Certificates are <code class="path">tls internal</code>.
+				No LAN bind, no Let’s Encrypt. <span class="mono">FE ADR-0014</span>
+			</p>
+			<p data-node="kit">
+				<code class="path">adapter-node</code> on <code class="path">127.0.0.1:27180</code>. SSR
+				is on. First-paint data comes from
+				<code class="path">+layout.server.ts</code>. <span class="mono">FE ADR-0011 · 0014</span>
+			</p>
+			<p data-node="bff">
+				The browser calls same-origin <code class="path">/v1</code>. Kit proxies to
+				<code class="path">API_ORIGIN</code> and forwards <code class="path">Set-Cookie</code>,
+				so <code class="path">vynno_session</code> is first-party.
+			</p>
+			<p data-node="api">
+				Compiled <code class="path">bin/vynno-api</code> on
+				<code class="path">127.0.0.1:27182</code>. Gin at the edge; session and project rules in
+				<code class="path">internal/domain</code>. <span class="mono">API ADR-0001 · 0011</span>
+			</p>
+			<p data-node="pg">
+				Docker Compose Postgres. Database <code class="path">vynno</code> is daily history. sqlc
+				queries, goose migrations at boot. Do not
+				<code class="path">docker compose down -v</code>. <span class="mono">API ADR-0009</span>
+			</p>
+			<p data-node="dev">
+				<code class="path">scripts/dev</code> is <code class="path">go run</code> on
+				<code class="path">:8081</code>. Frontend e2e talks here. It does not share rows with
+				production.
+			</p>
+			<p data-node="pgdev">
+				Database <code class="path">vynno_dev</code>. Seed and reset are allowed here and refuse
+				any other name. Production <code class="path">vynno</code> has no wipe script.
+			</p>
+			<p data-node="grok">
+				Grok starts <code class="path">go run ./cmd/mcp</code> from
+				<code class="path">.grok/config.toml</code>. The process speaks stdio. The agent
+				receives tool results, not SQL. <span class="mono">API ADR-0016</span>
+			</p>
+			<p data-node="mcp">
+				<code class="path">cmd/mcp</code> checks <code class="path">VYNNO_MCP_TOKEN</code> at
+				boot and again on every tool call. That secret is the same opaque token the API accepts
+				as <code class="path">Authorization: Bearer</code>.
+				<code class="path">go run ./cmd/mcp token</code> prints one; it lasts 30 days, and a
+				password reset revokes it. A missing or dead token refuses the process. Logs go to
+				stderr. No migrations, and no Gin. <code class="path">./scripts/build</code> also writes
+				<code class="path">bin/vynno-mcp</code>. <span class="mono">API ADR-0016</span>
+			</p>
+			<p data-node="mcpdb">
+				Same daily database as production, <code class="path">vynno</code>, via
+				<code class="path">DATABASE_URL</code>. Queries are an allowlist scoped by the token’s
+				user id. Password hashes, token hashes, one-time-code hashes, and avatar bytes are not
+				selected.
+			</p>
+		</template>
+		<template id="tool-copy">
+			<p data-tool="vynno_whoami">
+				Email and display name of the account the token names. Every other tool returns only
+				that history.
+			</p>
+			<p data-tool="vynno_list_projects">
+				That account’s projects. Archived rows are omitted unless
+				<code class="path">includeArchived</code> is true.
+			</p>
+			<p data-tool="vynno_list_sessions">
+				Sessions, newest first. Optional overlap window, project, and status
+				(<code class="path">active</code> or <code class="path">stopped</code>). Limit defaults
+				to 50 and caps at 200. A live session’s duration runs until now.
+			</p>
+			<p data-tool="vynno_get_active_session">
+				The live timer, or idle when nothing is running. At most one active session.
+			</p>
+			<p data-tool="vynno_summarize_time">
+				Overlap totals for a window, grouped by project, activity, or UTC day.
+				<code class="path">from</code> and <code class="path">to</code> are RFC3339, or
+				<code class="path">YYYY-MM-DD</code> in UTC (a date used as
+				<code class="path">to</code> includes that whole day). A session that crosses midnight
+				is split. Totals are computed here; <code class="path">/v1</code> grows no aggregate
+				route.
+			</p>
+		</template>
+		<template id="life-copy">
+			<p data-state="idle">
+				No live session. <code class="path">GET /sessions/active</code> is
+				<code class="path">404 session_not_active</code>. Timer shows empty or the last note,
+				ready to start.
+			</p>
+			<p data-state="active">
+				Elapsed is <code class="path">now − startedAt</code>. Stop is the only live verb. Status
+				is never patched.
+			</p>
+			<p data-state="stopped">
+				Log entry. Restart is a new <code class="path">POST /sessions</code>, never a mutate of
+				this row back to live. Edit and delete are allowed. A break is stop, then start.
+			</p>
+		</template>
+
+		
+		<script type="module" src="../js/details.js"></script>
+	</body>
+</html>

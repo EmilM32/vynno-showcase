@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Window video fixture</title>
+		<link rel="stylesheet" href="../../css/tokens.css" />
+		<link rel="stylesheet" href="../../css/base.css" />
+		<link rel="stylesheet" href="../../css/components.css" />
+		<link rel="stylesheet" href="../../css/pages.css" />
+	</head>
+	<body>
+		<div class="hero-media" data-slot="hero-media" style="width: min(40rem, calc(100% - 2rem))">
+			<div class="window">
+				<div class="window-bar">
+					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+					<span class="window-title">Timer</span>
+				</div>
+				<video src="sample.webm" muted playsinline autoplay loop></video>
+			</div>
+		</div>
+	</body>
+</html>
