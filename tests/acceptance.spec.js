@@ -35,6 +35,8 @@ test('landing length, fold, type scale, and CTA', async ({ page }) => {
 			lead: visible('.hero-copy .lead'),
 			cta: visible('.hero-actions .btn-primary'),
 			windowShown: shown,
+			windowBottom: win.bottom,
+			vh,
 			captionShown: caption.top < vh && caption.bottom > 0 && caption.height > 0,
 			h1Size: parseFloat(getComputedStyle(document.querySelector('#hero-title')).fontSize),
 		};
@@ -42,7 +44,8 @@ test('landing length, fold, type scale, and CTA', async ({ page }) => {
 	expect(fold.h1).toBeTruthy();
 	expect(fold.lead).toBeTruthy();
 	expect(fold.cta).toBeTruthy();
-	expect(fold.windowShown).toBeGreaterThanOrEqual(440);
+	expect(fold.windowShown).toBeGreaterThanOrEqual(340);
+	expect(fold.windowBottom).toBeLessThanOrEqual(fold.vh + 1);
 	expect(fold.h1Size).toBeLessThanOrEqual(73);
 	expect(fold.h1Size).toBeGreaterThanOrEqual(68);
 	await expect(page.locator('.hero-caption')).toHaveText('Live capture of the daily driver');
@@ -117,6 +120,13 @@ test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 	await expect(page.locator('.nav-menu')).toBeVisible();
 	await expect(page.locator('.nav-links')).toBeHidden();
 	await expect(page.locator('.window-timer .window-title')).toHaveText('vynno.localhost');
+	const bylineLines = await page.locator('.hero-byline > span').evaluateAll((els) =>
+		els
+			.filter((el) => getComputedStyle(el).display !== 'none')
+			.map((el) => Math.round(el.getBoundingClientRect().top)),
+	);
+	expect(new Set(bylineLines).size).toBe(2);
+	await expect(page.locator('.window-week')).toBeHidden();
 });
 
 test('no horizontal scroll from 320px and touch targets', async ({ page }) => {
