@@ -79,6 +79,53 @@ test('landing length, fold, type scale, and CTA', async ({ page }) => {
 	await expect(page.locator('.top .btn')).toHaveCount(0);
 });
 
+function boxesOverlap(a, b) {
+	return a.left < b.right - 0.5 && a.right > b.left + 0.5 && a.top < b.bottom - 0.5 && a.bottom > b.top + 0.5;
+}
+
+test('insights stays off the clock and Stop at desktop sizes', async ({ page }) => {
+	for (const size of [
+		{ width: 1280, height: 720 },
+		{ width: 1440, height: 900 },
+	]) {
+		await page.setViewportSize(size);
+		await page.goto('/');
+		const boxes = await page.evaluate(() => {
+			const rect = (sel) => {
+				const r = document.querySelector(sel).getBoundingClientRect();
+				return {
+					left: r.left,
+					top: r.top,
+					right: r.right,
+					bottom: r.bottom,
+					width: r.width,
+					height: r.height,
+				};
+			};
+			const img = document.querySelector('.window-week img');
+			const shown = img.getBoundingClientRect();
+			return {
+				week: rect('.window-week'),
+				clock: rect('.hero-hit-clock'),
+				stop: rect('.hero-hit-stop'),
+				image: { width: shown.width, height: shown.height, nw: img.naturalWidth, nh: img.naturalHeight },
+				vw: window.innerWidth,
+				vh: window.innerHeight,
+			};
+		});
+		expect(boxes.week.width, `${size.width} insights width`).toBeGreaterThan(160);
+		expect(boxes.clock.width, `${size.width} clock hit`).toBeGreaterThan(40);
+		expect(boxes.stop.height, `${size.width} stop hit`).toBeGreaterThan(20);
+		expect(boxesOverlap(boxes.week, boxes.clock), `${size.width} clock overlap`).toBe(false);
+		expect(boxesOverlap(boxes.week, boxes.stop), `${size.width} stop overlap`).toBe(false);
+		expect(boxes.week.left).toBeGreaterThanOrEqual(0);
+		expect(boxes.week.top).toBeGreaterThanOrEqual(0);
+		expect(boxes.week.right).toBeLessThanOrEqual(boxes.vw + 0.5);
+		expect(boxes.week.bottom).toBeLessThanOrEqual(boxes.vh + 0.5);
+		expect(Math.abs(boxes.image.width / boxes.image.height - boxes.image.nw / boxes.image.nh)).toBeLessThan(0.03);
+	}
+});
+
 test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/');

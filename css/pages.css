@@ -143,9 +143,9 @@
 .hero-media .window-week {
 	position: absolute;
 	z-index: 2;
-	top: 6.25rem;
-	right: 0;
-	width: min(32rem, 48%);
+	right: calc((100% - min(54rem, 100%)) / 2 + 0.7rem);
+	bottom: 0.55rem;
+	width: min(17rem, 30%);
 	box-shadow: var(--shadow-window);
 }
 
@@ -154,7 +154,30 @@
 }
 
 .hero-media .window-week .window-view {
-	aspect-ratio: 520 / 190;
+	aspect-ratio: 268 / 122;
+}
+
+/* Invisible stand-ins for the clock and Stop in the desktop capture.
+   Tests assert the Insights window does not intersect them. */
+.hero-hit {
+	position: absolute;
+	z-index: 1;
+	pointer-events: none;
+	opacity: 0;
+}
+
+.hero-hit-clock {
+	left: 39.28%;
+	top: 28.7%;
+	width: 22.13%;
+	height: 11.11%;
+}
+
+.hero-hit-stop {
+	left: 38.08%;
+	top: 63.43%;
+	width: 24.44%;
+	height: 10.88%;
 }
 
 .hero-media .window-view img {
