@@ -1143,3 +1143,291 @@ html.no-js .tl-shot img {
 		grid-template-columns: 1fr;
 	}
 }
+
+/*
+  Live timer overlay (stage B, B-0). Patches sit on the hero crops and cover the
+  screenshot glyphs. Percentages are of .window-view. Patch color is the median
+  of the panel around each field (desktop #171f33, mobile #161f33). Each edge
+  clears the ink by 2 source px on the desktop crop and 4 on the mobile crop,
+  which is ≥1 px and ≤2 px once the crop is fitted at 1280 and 390.
+
+  Desktop crop hero-timer-desktop.webp 1166×432. Ink is inclusive pixels.
+  field            ink x,y,w,h        patch % left, top, width, height     patch
+  clock digits     462,127,252,45     39.451, 28.935, 21.955, 11.343       #171f33
+  status line      476,192,218,15     40.652, 43.981, 19.039, 4.398        #171f33
+  started value    458,221,258,32     39.108, 50.694, 22.470, 8.333        #171f33
+  stop control     447,277,280,42     38.165, 63.657, 24.357, 10.648       #171f33
+  today value      96,374,60,16       measured, not overlaid (Insights)    #171f33
+  progress + meta  755,376,384,14     measured, not overlaid (Insights)    #171f33
+
+  Mobile crop hero-timer-mobile.webp 840×649.
+  field            ink x,y,w,h        patch % left, top, width, height     patch
+  clock digits     190,84,419,72      22.143, 12.327, 50.833, 12.327       #161f33
+  status line      218,192,359,24     25.476, 28.968, 43.690, 4.931        #161f33
+  started value    185,239,428,53     21.548, 36.210, 51.905, 9.399        #161f33
+  stop control     167,332,463,69     19.405, 50.539, 56.071, 11.864       #161f33
+  today + progress 78,478,693,127     8.333, 72.111, 85.714, 24.037        #161f33
+
+  Started input fill sampled inside the field is #131b2f. Stop and date borders
+  are #3b4357. Clock digits match .hero-hit-clock within 0.5% (39.28/28.7/22.13/11.11).
+  Stop matches .hero-hit-stop within 0.5% (38.08/63.43/24.44/10.88).
+*/
+.live-layer[data-state] {
+	--patch: #171f33;
+	--field-line: #3b4357;
+	--field-well: #131b2f;
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	color: var(--text);
+	font-size: max(13px, 1.5cqi);
+	line-height: 1;
+}
+
+.live-layer[hidden] {
+	display: none !important;
+}
+
+.clock-digits,
+.clock-status,
+.clock-started,
+.clock-stop,
+.clock-today {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	background: var(--patch);
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.clock-digits {
+	left: 39.451%;
+	top: 28.935%;
+	width: 21.955%;
+	height: 11.343%;
+	color: var(--primary);
+	font-family: var(--mono);
+	font-weight: 500;
+	font-size: max(13px, 4.505cqi);
+	letter-spacing: 0;
+}
+
+.clock-status {
+	left: 40.652%;
+	top: 43.981%;
+	width: 19.039%;
+	height: 4.398%;
+	gap: 0.4em;
+	color: var(--muted);
+	font-size: max(13px, 1.45cqi);
+	white-space: nowrap;
+}
+
+.clock-dot {
+	width: 0.45em;
+	height: 0.45em;
+	border-radius: 50%;
+	background: var(--live);
+	flex: none;
+}
+
+.live-layer[data-state='stopped'] .clock-dot {
+	background: var(--muted);
+}
+
+.clock-started {
+	left: 39.108%;
+	top: 50.694%;
+	width: 22.47%;
+	height: 8.333%;
+	gap: 0.55em;
+	color: var(--muted);
+	font-size: max(13px, 1.35cqi);
+	white-space: nowrap;
+}
+
+.clock-started time {
+	color: var(--text);
+	background: var(--field-well);
+	border: 1px solid var(--field-line);
+	border-radius: 6px;
+	padding: 0.28em 0.45em;
+}
+
+.clock-stop {
+	left: 38.165%;
+	top: 63.657%;
+	width: 24.357%;
+	height: 10.648%;
+	gap: 0.4em;
+	margin: 0;
+	padding: 0;
+	appearance: none;
+	border: 1px solid var(--field-line);
+	border-radius: 8px;
+	color: var(--text);
+	font-family: var(--sans);
+	font-weight: 650;
+	font-size: max(13px, 1.6cqi);
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.clock-stop::before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: max(100%, 44px);
+	height: max(100%, 44px);
+	transform: translate(-50%, -50%);
+}
+
+.clock-mark {
+	width: 0.5em;
+	height: 0.5em;
+	background: currentColor;
+	flex: none;
+}
+
+.clock-today {
+	display: none;
+	left: 8.333%;
+	top: 72.111%;
+	width: 85.714%;
+	height: 24.037%;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+	gap: 0.55rem;
+	padding: 0 0.2rem;
+	font-size: max(13px, 3.8cqi);
+}
+
+.today-line,
+.today-progress {
+	display: flex;
+	align-items: center;
+	gap: 0.55em;
+	max-width: none;
+}
+
+.today-progress {
+	justify-content: flex-end;
+}
+
+.today-kicker {
+	color: var(--muted);
+	font-size: 13px;
+	letter-spacing: 0.08em;
+}
+
+.today-sum {
+	color: var(--primary);
+	font-family: var(--mono);
+	font-weight: 650;
+}
+
+.today-delta,
+.today-meta {
+	color: var(--muted);
+}
+
+.today-track {
+	position: relative;
+	flex: 1 1 auto;
+	height: 4px;
+	background: #3b4355;
+	border-radius: 99px;
+}
+
+.today-fill {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 47%;
+	background: var(--primary);
+	border-radius: inherit;
+}
+
+.today-segment {
+	position: absolute;
+	top: 0;
+	width: 6px;
+	height: 4px;
+	background: var(--live);
+	border-radius: inherit;
+}
+
+.today-segment[hidden] {
+	display: none;
+}
+
+.window-week text {
+	fill: var(--muted);
+	font-family: var(--mono);
+	font-size: 9px;
+}
+
+.window-week [data-session='latest'] {
+	fill: var(--live);
+	transform-box: fill-box;
+	transform-origin: left center;
+	animation: session-land 240ms var(--ease-out);
+}
+
+.window-week [data-session='earlier'] {
+	fill: var(--primary);
+}
+
+@keyframes session-land {
+	from {
+		transform: scaleX(0);
+	}
+	to {
+		transform: scaleX(1);
+	}
+}
+
+@media (max-width: 640px) {
+	.live-layer[data-state] {
+		--patch: #161f33;
+	}
+
+	.clock-digits {
+		left: 22.143%;
+		top: 12.327%;
+		width: 50.833%;
+		height: 12.327%;
+		font-size: max(13px, 10.39cqi);
+	}
+
+	.clock-status {
+		left: 25.476%;
+		top: 28.968%;
+		width: 43.69%;
+		height: 4.931%;
+	}
+
+	.clock-started {
+		left: 21.548%;
+		top: 36.21%;
+		width: 51.905%;
+		height: 9.399%;
+	}
+
+	.clock-stop {
+		left: 19.405%;
+		top: 50.539%;
+		width: 56.071%;
+		height: 11.864%;
+	}
+
+	.clock-today {
+		display: flex;
+	}
+}
