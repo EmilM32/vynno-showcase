@@ -1,5 +1,7 @@
-# Required check name is "Test / playwright" (workflow name / job id).
-# Do not rename either: branch protection on main depends on that string.
+# Branch protection on main should require the check "playwright".
+# That is this job id (check_run.name). The Actions UI groups it under the
+# workflow title "Test"; that prefix is not part of the check name.
+# Do not rename the job id.
 #
 # Deferred until PR2 (heatmap / vendored ascii-fx). Nothing on the page exercises them yet:
 # - ≤2 live WebGL contexts (addInitScript around getContext)

@@ -32,7 +32,7 @@ npm ci && npx playwright install chromium webkit && npm test
 
 `npm test` runs `scripts/size.mjs`, then Playwright in Chromium and WebKit. The size script sums `gzip -9` of `js/**/*.js` excluding `js/vendor/**` and fails above 9 KB (9216 bytes).
 
-GitHub Actions (`.github/workflows/test.yml`) runs that on pull requests to `main` and on pushes to `main`. The check name is `Test / playwright`. Pages deploy runs the same workflow and publishes only after it passes.
+GitHub Actions (`.github/workflows/test.yml`) runs that on pull requests to `main` and on pushes to `main`. The check name is `playwright`. Pages deploy runs the same workflow and publishes only after it passes.
 
 Pixel snapshots are generated and compared only inside the Playwright image that matches the pinned `@playwright/test` version. Do not commit snapshots taken on macOS or on the host. Update them with:
 
