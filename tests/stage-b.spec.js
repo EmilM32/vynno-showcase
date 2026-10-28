@@ -331,6 +331,91 @@ test('clock ticks with reduced motion', async ({ page }) => {
 	await expect(page.locator('.hero-caption')).toHaveText(WEEK);
 });
 
+test('insights axis labels stay inside the panel', async ({ page }) => {
+	await page.clock.install({ time: WHEN });
+	await page.setViewportSize({ width: 1280, height: 720 });
+	await page.goto('/');
+	const boxes = await page.locator('.window-week svg').evaluate((svg) =>
+		[...svg.querySelectorAll('.week-axis')].map((node) => {
+			const box = node.getBBox();
+			return {
+				text: node.textContent,
+				x: box.x,
+				y: box.y,
+				right: box.x + box.width,
+				bottom: box.y + box.height,
+			};
+		}),
+	);
+	expect(boxes.length).toBeGreaterThanOrEqual(3);
+	for (const box of boxes) {
+		expect(box.text, box.text).toMatch(/^\d{2}:00$/);
+		expect(box.x, box.text).toBeGreaterThanOrEqual(0);
+		expect(box.y, box.text).toBeGreaterThanOrEqual(0);
+		expect(box.right, box.text).toBeLessThanOrEqual(268);
+		expect(box.bottom, box.text).toBeLessThanOrEqual(122);
+	}
+});
+
+test('insights leaves the timer today row visible', async ({ page }) => {
+	for (const width of [768, 1280, 1440, 1920]) {
+		await page.setViewportSize({ width, height: 1000 });
+		await page.goto('/');
+		const gap = await page.evaluate(() => {
+			const view = document.querySelector('.window-timer .window-view').getBoundingClientRect();
+			const week = document.querySelector('.window-week').getBoundingClientRect();
+			const todayTop = view.top + view.height * (350 / 432);
+			return todayTop - week.bottom;
+		});
+		expect(gap, `${width}`).toBeGreaterThanOrEqual(2);
+	}
+});
+
+test('stop uses a square and start uses a play icon', async ({ page }) => {
+	await page.goto('/');
+	const mark = page.locator('.clock-mark');
+	const running = await mark.evaluate((el) => {
+		const style = getComputedStyle(el);
+		return { width: parseFloat(style.width), background: style.backgroundColor, border: parseFloat(style.borderLeftWidth) };
+	});
+	expect(running.width).toBeGreaterThan(0);
+	expect(running.border).toBe(0);
+	expect(running.background).not.toBe('rgba(0, 0, 0, 0)');
+	await page.getByRole('button', { name: 'Stop this session' }).click();
+	const stopped = await mark.evaluate((el) => {
+		const style = getComputedStyle(el);
+		return {
+			background: style.backgroundColor,
+			border: parseFloat(style.borderLeftWidth),
+			color: style.borderLeftColor,
+		};
+	});
+	expect(stopped.background).toBe('rgba(0, 0, 0, 0)');
+	expect(stopped.border).toBeGreaterThan(3);
+	expect(stopped.color).toContain('218, 226, 253');
+});
+
+test('today overlay covers the screenshot divider', async ({ page }) => {
+	for (const width of [320, 390, 640]) {
+		await page.setViewportSize({ width, height: 844 });
+		await page.goto('/');
+		const cover = await page.evaluate(() => {
+			const view = document.querySelector('.window-timer .window-view').getBoundingClientRect();
+			const today = document.querySelector('.clock-today').getBoundingClientRect();
+			return {
+				left: today.left - view.left,
+				right: view.right - today.right,
+				top: (today.top - view.top) / view.height,
+				bottom: (view.bottom - today.bottom) / view.height,
+			};
+		});
+		expect(cover.left, `${width} left`).toBeLessThanOrEqual(12);
+		expect(cover.right, `${width} right`).toBeLessThanOrEqual(12);
+		expect(cover.top, `${width} top`).toBeLessThanOrEqual(0.78);
+		expect(cover.bottom, `${width} bottom`).toBeLessThanOrEqual(0.05);
+	}
+});
+
 test('stage B copy', async ({ page }) => {
 	await page.goto('/');
 	await expect(page.locator('#tour .section-lede')).toHaveText(

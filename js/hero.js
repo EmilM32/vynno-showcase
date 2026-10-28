@@ -137,9 +137,24 @@ const boot = () => {
 		for (let minute = Math.ceil(axis.start / 60) * 60; minute <= axis.end && minute < 1440; minute += 60) {
 			const x = CHART.x + ((minute - axis.start) / (axis.end - axis.start)) * CHART.w;
 			const label = `${pad(minute / 60)}:00`;
-			parts.push(`<text class="week-axis" x="${x.toFixed(1)}" y="114" text-anchor="middle">${label}</text>`);
+			parts.push(`<text class="week-axis" x="${x.toFixed(1)}" y="112" text-anchor="middle">${label}</text>`);
 		}
 		svg.innerHTML = parts.join('');
+		for (const node of svg.querySelectorAll('.week-axis')) {
+			const box = node.getBBox();
+			if (box.x < 1) {
+				node.setAttribute('text-anchor', 'start');
+				node.setAttribute('x', '2');
+			} else if (box.x + box.width > CHART.width - 1) {
+				node.setAttribute('text-anchor', 'end');
+				node.setAttribute('x', String(CHART.width - 2));
+			}
+			const fitted = node.getBBox();
+			if (fitted.y + fitted.height > CHART.height - 1) {
+				const y = Number(node.getAttribute('y')) - (fitted.y + fitted.height - (CHART.height - 1));
+				node.setAttribute('y', y.toFixed(1));
+			}
+		}
 		weekFigure.dataset.live = 'true';
 		svg.hidden = false;
 	};

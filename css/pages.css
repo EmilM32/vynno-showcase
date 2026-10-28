@@ -141,6 +141,12 @@
 	box-shadow: var(--shadow-window);
 }
 
+/* With JS, sit above the timer's TODAY row so the bar and percent stay visible.
+   Without JS the card stays in the stage A corner. */
+html:not(.no-js) .hero-media .window-week {
+	bottom: 19%;
+}
+
 .hero-media .window-timer .window-view {
 	aspect-ratio: 1166 / 432;
 	container-type: inline-size;
