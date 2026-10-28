@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const pages = ['/', '/architecture/', '/lab/'];
+const pages = ['./', 'architecture/', 'lab/'];
 
 async function installRequestGuard(page) {
 	const external = [];
@@ -14,9 +14,9 @@ async function installRequestGuard(page) {
 	return external;
 }
 
-test('landing length, fold, type scale, and CTA', async ({ page }) => {
+test('landing length, fold, type scale, and CTA', async ({ page, browser }) => {
 	await page.setViewportSize({ width: 1280, height: 720 });
-	await page.goto('/');
+	await page.goto('./');
 	const tall = await page.evaluate(() => document.documentElement.scrollHeight);
 	expect(tall).toBeLessThanOrEqual(4500);
 
@@ -48,19 +48,28 @@ test('landing length, fold, type scale, and CTA', async ({ page }) => {
 	expect(fold.windowBottom).toBeLessThanOrEqual(fold.vh + 1);
 	expect(fold.h1Size).toBeLessThanOrEqual(73);
 	expect(fold.h1Size).toBeGreaterThanOrEqual(68);
-	await expect(page.locator('.hero-caption')).toHaveText('Live capture of the daily driver');
+	await expect(page.locator('.hero-caption')).toHaveText(
+		'This clock started when you opened the page.',
+	);
 	await expect(page.locator('.window-timer .window-title')).toHaveText('vynno.localhost');
 	await expect(page.locator('.hero-copy .label')).toHaveText(/Focus timer · v1\.3\.0/i);
 	await expect(page.locator('.hero-copy .label')).not.toHaveText(/local-first/i);
 	await expect(page.locator('.hero-copy .lead')).toHaveText(
-		'A local-first focus timer: start a session, tag the project, read your week at a glance.',
+		'A local-first focus timer. The one below started when you did.',
 	);
 	await expect(page.locator('.hero-byline')).toHaveText(
 		'Side project by Emil Majer · SvelteKit + Go · built with AI agents',
 	);
 	await expect(page.locator('.status-sep')).toHaveText('·');
-	await expect(page.locator('.status-chip .live-dot')).toHaveCount(1);
-	await expect(page.locator('.status-chip .status-icon')).toHaveCount(1);
+	await expect(page.locator('.status-chip .live-dot')).toHaveCount(0);
+	await expect(page.locator('.status-chip .status-icon')).toHaveCount(2);
+
+	const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 720 } });
+	const nojs = await context.newPage();
+	await nojs.goto(new URL('/vynno-showcase/', page.url()).href);
+	await expect(nojs.locator('.hero-caption')).toHaveText('Live capture of the daily driver');
+	await expect(nojs.locator('.live-layer')).toBeHidden();
+	await context.close();
 	await expect(page.locator('.window-week')).toBeVisible();
 	const desktopSrc = await page.locator('.window-timer img').evaluate((img) => img.currentSrc);
 	expect(desktopSrc).toContain('hero-timer-desktop.webp');
@@ -89,7 +98,7 @@ test('insights stays off the clock and Stop at desktop sizes', async ({ page }) 
 		{ width: 1440, height: 900 },
 	]) {
 		await page.setViewportSize(size);
-		await page.goto('/');
+		await page.goto('./');
 		const boxes = await page.evaluate(() => {
 			const rect = (sel) => {
 				const r = document.querySelector(sel).getBoundingClientRect();
@@ -102,13 +111,14 @@ test('insights stays off the clock and Stop at desktop sizes', async ({ page }) 
 					height: r.height,
 				};
 			};
-			const img = document.querySelector('.window-week img');
-			const shown = img.getBoundingClientRect();
+			const svg = document.querySelector('.window-week svg');
+			const shown = svg.getBoundingClientRect();
+			const vb = svg.viewBox.baseVal;
 			return {
 				week: rect('.window-week'),
-				clock: rect('.hero-hit-clock'),
-				stop: rect('.hero-hit-stop'),
-				image: { width: shown.width, height: shown.height, nw: img.naturalWidth, nh: img.naturalHeight },
+				clock: rect('[data-hit=clock]'),
+				stop: rect('[data-hit=stop]'),
+				image: { width: shown.width, height: shown.height, nw: vb.width, nh: vb.height },
 				vw: window.innerWidth,
 				vh: window.innerHeight,
 			};
@@ -123,12 +133,16 @@ test('insights stays off the clock and Stop at desktop sizes', async ({ page }) 
 		expect(boxes.week.right).toBeLessThanOrEqual(boxes.vw + 0.5);
 		expect(boxes.week.bottom).toBeLessThanOrEqual(boxes.vh + 0.5);
 		expect(Math.abs(boxes.image.width / boxes.image.height - boxes.image.nw / boxes.image.nh)).toBeLessThan(0.03);
+		if (size.width === 1280) {
+			expect(boxes.week.width).toBeCloseTo(272, 0);
+			expect(boxes.week.height).toBeCloseTo(160, 0);
+		}
 	}
 });
 
 test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
+	await page.goto('./');
 	const height = await page.evaluate(() => document.documentElement.scrollHeight);
 	expect(height).toBeLessThanOrEqual(7000);
 	const fold = await page.evaluate(() => {
@@ -178,7 +192,7 @@ test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 
 test('no horizontal scroll from 320px and touch targets', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 700 });
-	await page.goto('/');
+	await page.goto('./');
 	const metrics = await page.evaluate(() => ({
 		scrollWidth: document.documentElement.scrollWidth,
 		clientWidth: document.documentElement.clientWidth,
@@ -229,22 +243,52 @@ test('no external requests on the three pages', async ({ page }) => {
 	expect(external).toEqual([]);
 });
 
-test('live color is only the local-status dot on the landing page', async ({ page }) => {
-	await page.goto('/');
-	const users = await page.evaluate(() => {
+async function liveColorUsers(page) {
+	return page.evaluate(() => {
+		const allowed = (el) =>
+			el.classList?.contains('clock-dot') ||
+			el.classList?.contains('today-segment') ||
+			el.getAttribute?.('data-session') === 'latest';
 		const hits = [];
 		for (const el of document.querySelectorAll('body *')) {
 			const style = getComputedStyle(el);
-			const blob = `${style.color} ${style.backgroundColor} ${style.borderColor} ${style.boxShadow}`;
-			if (blob.includes('77, 224, 130') || blob.includes('77,224,130')) hits.push(el.className || el.tagName);
+			const blob = `${style.color} ${style.backgroundColor} ${style.borderColor} ${style.boxShadow} ${style.fill} ${style.stroke}`;
+			if (!blob.includes('77, 224, 130') && !blob.includes('77,224,130')) continue;
+			const box = el.getBoundingClientRect();
+			if (box.width < 0.5 || box.height < 0.5) continue;
+			hits.push(allowed(el) ? 'ok' : el.className || el.tagName);
 		}
 		return hits;
 	});
-	expect(users).toEqual(['live-dot']);
+}
+
+test('live color is only the visitor’s latest session', async ({ page }) => {
+	await page.clock.install({ time: new Date('2026-10-28T11:16:00') });
+	await page.goto('./');
+	const running = await liveColorUsers(page);
+	expect(running.length).toBeGreaterThan(0);
+	expect(running.length).toBeLessThanOrEqual(2);
+	expect(running.every((hit) => hit === 'ok')).toBeTruthy();
+
+	await page.clock.runFor(42_000);
+	await page.getByRole('button', { name: 'Stop this session' }).click();
+	await page.locator('[data-session="latest"]').evaluate(async (el) => {
+		await Promise.all((el.getAnimations?.() || []).map((animation) => animation.finished));
+	});
+	const stopped = await liveColorUsers(page);
+	expect(stopped.length).toBeGreaterThan(0);
+	expect(stopped.length).toBeLessThanOrEqual(2);
+	expect(stopped.every((hit) => hit === 'ok')).toBeTruthy();
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	const mobile = await liveColorUsers(page);
+	expect(mobile.length).toBeGreaterThan(0);
+	expect(mobile.length).toBeLessThanOrEqual(2);
+	expect(mobile.every((hit) => hit === 'ok')).toBeTruthy();
 });
 
 test('skip link is first and focus is visible', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('./');
 	await page.keyboard.press('Tab');
 	const skip = page.locator('.skip');
 	await expect(skip).toBeFocused();
@@ -264,11 +308,11 @@ test('internal links resolve', async ({ page, request }) => {
 	const seen = new Set();
 	const broken = [];
 	const diagramPages = [
-		'/diagrams/runtime.html',
-		'/diagrams/start-session.html',
-		'/diagrams/session-lifecycle.html',
-		'/diagrams/write-first.html',
-		'/diagrams/insights-data.html',
+		'diagrams/runtime.html',
+		'diagrams/start-session.html',
+		'diagrams/session-lifecycle.html',
+		'diagrams/write-first.html',
+		'diagrams/insights-data.html',
 	];
 	for (const path of [...pages, ...diagramPages]) {
 		await page.goto(path);

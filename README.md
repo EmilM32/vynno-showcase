@@ -32,6 +32,8 @@ npm ci && npx playwright install chromium webkit && npm test
 
 `npm test` runs `scripts/size.mjs`, then Playwright in Chromium and WebKit. The size script sums `gzip -9` of `js/**/*.js` excluding `js/vendor/**` and fails above 9 KB (9216 bytes).
 
+The test server builds `_site` with `scripts/build-site.sh` (the same copy `pages.yml` publishes) and serves it at `http://127.0.0.1:4173/vynno-showcase/`. A request to an origin-absolute path such as `/js/hero.js` is not the published file.
+
 GitHub Actions (`.github/workflows/test.yml`) runs that on pull requests to `main` and on pushes to `main`. The check name is `playwright`. Pages deploy runs the same workflow and publishes only after it passes.
 
 Pixel snapshots are generated and compared only inside the Playwright image that matches the pinned `@playwright/test` version. Do not commit snapshots taken on macOS or on the host. Update them with:
@@ -44,5 +46,5 @@ Two later gates are not checked yet. A cap of two live WebGL contexts, and ascii
 
 ## Deploy
 
-Push `main`. `.github/workflows/pages.yml` runs the test workflow, then publishes the site only after that job passes.
+Push `main`. `.github/workflows/pages.yml` runs the test workflow, builds `_site` with `scripts/build-site.sh`, then publishes only after that job passes. After deploy, `scripts/smoke-pages.sh` requests the Pages URL plus the main CSS and JS files and fails unless each returns 200.
 The workflow enables GitHub Pages automatically if it has not been configured yet.

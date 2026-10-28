@@ -49,7 +49,7 @@ async function visibleInViewport(page, selector) {
 test.describe('old anchor redirects', () => {
 	for (const [hash, path, selector] of cases) {
 		test(`index.html${hash}`, async ({ page }) => {
-			await page.goto(`/index.html${hash}`, { waitUntil: 'load' });
+			await page.goto(`index.html${hash}`, { waitUntil: 'load' });
 			await expect(page).toHaveURL(path);
 			if (!selector) {
 				await expect(page.locator('#arch-title, #process-title')).toHaveCount(0);
