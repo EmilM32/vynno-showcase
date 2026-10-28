@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const pages = ['/', '/architecture/', '/lab/'];
+const pages = ['./', 'architecture/', 'lab/'];
 
 async function installRequestGuard(page) {
 	const external = [];
@@ -16,7 +16,7 @@ async function installRequestGuard(page) {
 
 test('landing length, fold, type scale, and CTA', async ({ page, browser }) => {
 	await page.setViewportSize({ width: 1280, height: 720 });
-	await page.goto('/');
+	await page.goto('./');
 	const tall = await page.evaluate(() => document.documentElement.scrollHeight);
 	expect(tall).toBeLessThanOrEqual(4500);
 
@@ -66,7 +66,7 @@ test('landing length, fold, type scale, and CTA', async ({ page, browser }) => {
 
 	const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 720 } });
 	const nojs = await context.newPage();
-	await nojs.goto(new URL('/', page.url()).href);
+	await nojs.goto(new URL('/vynno-showcase/', page.url()).href);
 	await expect(nojs.locator('.hero-caption')).toHaveText('Live capture of the daily driver');
 	await expect(nojs.locator('.live-layer')).toBeHidden();
 	await context.close();
@@ -98,7 +98,7 @@ test('insights stays off the clock and Stop at desktop sizes', async ({ page }) 
 		{ width: 1440, height: 900 },
 	]) {
 		await page.setViewportSize(size);
-		await page.goto('/');
+		await page.goto('./');
 		const boxes = await page.evaluate(() => {
 			const rect = (sel) => {
 				const r = document.querySelector(sel).getBoundingClientRect();
@@ -142,7 +142,7 @@ test('insights stays off the clock and Stop at desktop sizes', async ({ page }) 
 
 test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
+	await page.goto('./');
 	const height = await page.evaluate(() => document.documentElement.scrollHeight);
 	expect(height).toBeLessThanOrEqual(7000);
 	const fold = await page.evaluate(() => {
@@ -192,7 +192,7 @@ test('mobile fold keeps chips intact and the page short', async ({ page }) => {
 
 test('no horizontal scroll from 320px and touch targets', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 700 });
-	await page.goto('/');
+	await page.goto('./');
 	const metrics = await page.evaluate(() => ({
 		scrollWidth: document.documentElement.scrollWidth,
 		clientWidth: document.documentElement.clientWidth,
@@ -264,7 +264,7 @@ async function liveColorUsers(page) {
 
 test('live color is only the visitor’s latest session', async ({ page }) => {
 	await page.clock.install({ time: new Date('2026-10-28T11:16:00') });
-	await page.goto('/');
+	await page.goto('./');
 	const running = await liveColorUsers(page);
 	expect(running.length).toBeGreaterThan(0);
 	expect(running.length).toBeLessThanOrEqual(2);
@@ -288,7 +288,7 @@ test('live color is only the visitor’s latest session', async ({ page }) => {
 });
 
 test('skip link is first and focus is visible', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('./');
 	await page.keyboard.press('Tab');
 	const skip = page.locator('.skip');
 	await expect(skip).toBeFocused();
@@ -308,11 +308,11 @@ test('internal links resolve', async ({ page, request }) => {
 	const seen = new Set();
 	const broken = [];
 	const diagramPages = [
-		'/diagrams/runtime.html',
-		'/diagrams/start-session.html',
-		'/diagrams/session-lifecycle.html',
-		'/diagrams/write-first.html',
-		'/diagrams/insights-data.html',
+		'diagrams/runtime.html',
+		'diagrams/start-session.html',
+		'diagrams/session-lifecycle.html',
+		'diagrams/write-first.html',
+		'diagrams/insights-data.html',
 	];
 	for (const path of [...pages, ...diagramPages]) {
 		await page.goto(path);

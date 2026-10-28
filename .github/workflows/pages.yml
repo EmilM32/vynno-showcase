@@ -29,14 +29,11 @@ jobs:
         with:
           enablement: true
       - name: Prepare site
-        run: |
-          mkdir -p _site
-          cp index.html .nojekyll _site/
-          cp -R css js assets architecture lab _site/
-          mkdir -p _site/diagrams
-          cp diagrams/*.html _site/diagrams/
+        run: bash scripts/build-site.sh
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Smoke the published site
+        run: bash scripts/smoke-pages.sh "${{ steps.deployment.outputs.page_url }}"

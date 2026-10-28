@@ -29,7 +29,7 @@ async function waitForBars(page) {
 
 test('clock counts visible time on this page', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
-	await page.goto('/');
+	await page.goto('./');
 	await expect(page.locator('[data-hit=clock]')).toHaveText('00:00:00');
 	await page.clock.runFor(42_000);
 	await expect(page.locator('[data-hit=clock]')).toHaveText('00:00:42');
@@ -40,7 +40,7 @@ test('clock counts visible time on this page', async ({ page }) => {
 
 test('clock pauses while the tab is hidden', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
-	await page.goto('/');
+	await page.goto('./');
 	await page.clock.runFor(42_000);
 	await expect(page.locator('[data-hit=clock]')).toHaveText('00:00:42');
 	await setHidden(page, true);
@@ -57,7 +57,7 @@ test('clock pauses while the tab is hidden', async ({ page }) => {
 test('stop lands the session in the week (desktop)', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
 	await page.setViewportSize({ width: 1280, height: 720 });
-	await page.goto('/');
+	await page.goto('./');
 	await page.clock.runFor(42_000);
 	await page.getByRole('button', { name: 'Stop this session' }).click();
 	await expect(page.locator('.live-layer')).toHaveAttribute('data-state', 'stopped');
@@ -92,7 +92,7 @@ test('stop lands the session in the week (desktop)', async ({ page }) => {
 test('stop lands the session in today (mobile)', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
+	await page.goto('./');
 	await expect(page.locator('.window-week')).toBeHidden();
 	await expect(page.locator('.today-sum')).toHaveText('03h 44m');
 	await page.clock.runFor(42_000);
@@ -106,7 +106,7 @@ test('stop lands the session in today (mobile)', async ({ page }) => {
 
 test('start again keeps earlier sessions', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
-	await page.goto('/');
+	await page.goto('./');
 	await page.clock.runFor(42_000);
 	await page.getByRole('button', { name: 'Stop this session' }).click();
 	await page.getByRole('button', { name: 'Start a new session' }).click();
@@ -129,7 +129,7 @@ test('start again keeps earlier sessions', async ({ page }) => {
 });
 
 test('keyboard and screen reader', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('./');
 	await page.evaluate(() => {
 		const node = document.getElementById('session-status');
 		window.__statusChanges = 0;
@@ -157,7 +157,7 @@ test('keyboard and screen reader', async ({ page }) => {
 
 test('a session under a second does not land', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
-	await page.goto('/');
+	await page.goto('./');
 	await page.getByRole('button', { name: 'Stop this session' }).click();
 	await expect(page.locator('#session-status')).toHaveText('Too short to log.');
 	await expect(page.locator('.window-week [data-session="latest"]')).toHaveCount(0);
@@ -169,7 +169,7 @@ test('a session under a second does not land', async ({ page }) => {
 test('touch targets in the hero', async ({ page }) => {
 	for (const width of [390, 320]) {
 		await page.setViewportSize({ width, height: 800 });
-		await page.goto('/');
+		await page.goto('./');
 		const button = page.locator('[data-hit=stop]');
 		await button.scrollIntoViewIfNeeded();
 		const hit = await button.evaluate((el) => {
@@ -208,7 +208,7 @@ test.describe('no-js hero is the stage A capture', () => {
 	test.use({ javaScriptEnabled: false });
 
 	test('layer stays hidden and the window matches the capture', async ({ page }) => {
-		await page.goto('/');
+		await page.goto('./');
 		const layer = page.locator('.live-layer');
 		await expect(layer).toBeHidden();
 		expect(await layer.getAttribute('data-state')).toBeNull();
@@ -245,7 +245,7 @@ test('overlay aligns with the capture', async ({ page }) => {
 		{ width: 1920, height: 1080 },
 	]) {
 		await page.setViewportSize(viewport);
-		await page.goto('/?fixture=capture-values');
+		await page.goto('./?fixture=capture-values');
 		await page.evaluate(() => document.fonts.ready);
 		const report = await page.evaluate((fields) => {
 			const view = document.querySelector('.window-timer .window-view').getBoundingClientRect();
@@ -303,7 +303,7 @@ test('overlay aligns with the capture', async ({ page }) => {
 });
 
 test('week model agrees on today minutes', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('./');
 	const result = await page.evaluate(async () => {
 		const { createWeek } = await import(new URL('./js/week.js', location.href).href);
 		const wall = new Date('2026-10-28T11:16:00');
@@ -324,7 +324,7 @@ test('week model agrees on today minutes', async ({ page }) => {
 test('clock ticks with reduced motion', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await page.clock.install({ time: WHEN });
-	await page.goto('/');
+	await page.goto('./');
 	await page.clock.runFor(42_000);
 	await expect(page.locator('[data-hit=clock]')).toHaveText('00:00:42');
 	await page.getByRole('button', { name: 'Stop this session' }).click();
@@ -334,7 +334,7 @@ test('clock ticks with reduced motion', async ({ page }) => {
 test('insights axis labels stay inside the panel', async ({ page }) => {
 	await page.clock.install({ time: WHEN });
 	await page.setViewportSize({ width: 1280, height: 720 });
-	await page.goto('/');
+	await page.goto('./');
 	const boxes = await page.locator('.window-week svg').evaluate((svg) =>
 		[...svg.querySelectorAll('.week-axis')].map((node) => {
 			const box = node.getBBox();
@@ -360,7 +360,7 @@ test('insights axis labels stay inside the panel', async ({ page }) => {
 test('insights leaves the timer today row visible', async ({ page }) => {
 	for (const width of [768, 1280, 1440, 1920]) {
 		await page.setViewportSize({ width, height: 1000 });
-		await page.goto('/');
+		await page.goto('./');
 		const gap = await page.evaluate(() => {
 			const view = document.querySelector('.window-timer .window-view').getBoundingClientRect();
 			const week = document.querySelector('.window-week').getBoundingClientRect();
@@ -372,7 +372,7 @@ test('insights leaves the timer today row visible', async ({ page }) => {
 });
 
 test('stop uses a square and start uses a play icon', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('./');
 	const mark = page.locator('.clock-mark');
 	const running = await mark.evaluate((el) => {
 		const style = getComputedStyle(el);
@@ -398,7 +398,7 @@ test('stop uses a square and start uses a play icon', async ({ page }) => {
 test('today overlay covers the screenshot divider', async ({ page }) => {
 	for (const width of [320, 390, 640]) {
 		await page.setViewportSize({ width, height: 844 });
-		await page.goto('/');
+		await page.goto('./');
 		const cover = await page.evaluate(() => {
 			const view = document.querySelector('.window-timer .window-view').getBoundingClientRect();
 			const today = document.querySelector('.clock-today').getBoundingClientRect();
@@ -417,7 +417,7 @@ test('today overlay covers the screenshot divider', async ({ page }) => {
 });
 
 test('stage B copy', async ({ page }) => {
-	await page.goto('/');
+	await page.goto('./');
 	await expect(page.locator('#tour .section-lede')).toHaveText(
 		'Keyboard-first. One session at a time. Built to answer one question: where did the hours go?',
 	);
@@ -445,7 +445,7 @@ test('page length and layout shift stay in budget', async ({ page }) => {
 	});
 	await page.clock.install({ time: WHEN });
 	await page.setViewportSize({ width: 1280, height: 720 });
-	await page.goto('/');
+	await page.goto('./');
 	expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(4500);
 	await page.clock.runFor(42_000);
 	await page.getByRole('button', { name: 'Stop this session' }).click();
@@ -463,7 +463,7 @@ test('no console errors across states', async ({ page }) => {
 		if (msg.type() === 'error') errors.push(msg.text());
 	});
 	await page.clock.install({ time: WHEN });
-	await page.goto('/');
+	await page.goto('./');
 	await page.clock.runFor(2_000);
 	await page.getByRole('button', { name: 'Stop this session' }).click();
 	await page.getByRole('button', { name: 'Start a new session' }).click();

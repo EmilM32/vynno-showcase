@@ -8,7 +8,9 @@ export default defineConfig({
 	workers: 1,
 	reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
 	use: {
-		baseURL: 'http://127.0.0.1:4173',
+		// GitHub Pages publishes this repo at /vynno-showcase/. The trailing
+		// slash matters: a leading "/" in goto() is still origin-absolute.
+		baseURL: 'http://127.0.0.1:4173/vynno-showcase/',
 		viewport: { width: 1280, height: 720 },
 	},
 	projects: [
@@ -16,9 +18,9 @@ export default defineConfig({
 		{ name: 'webkit', use: { browserName: 'webkit' } },
 	],
 	webServer: {
-		command: 'npx --yes serve . -p 4173 --no-clipboard',
-		url: 'http://127.0.0.1:4173',
-		reuseExistingServer: true,
+		command: 'bash scripts/serve-test.sh',
+		url: 'http://127.0.0.1:4173/vynno-showcase/',
+		reuseExistingServer: false,
 		timeout: 60000,
 	},
 });
