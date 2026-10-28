@@ -1,0 +1,53 @@
+# Required check name is "Test / playwright" (workflow name / job id).
+# Do not rename either: branch protection on main depends on that string.
+#
+# Deferred until PR2 (heatmap / vendored ascii-fx). Nothing on the page exercises them yet:
+# - ≤2 live WebGL contexts (addInitScript around getContext)
+# - ascii-fx is not requested before load, and is not loaded in the lite tier
+# Already gated here, via `npm test`:
+# - scripts/size.mjs: own JS gzip -9 ≤ 9 KB, excluding js/vendor/**
+# - "no external requests on the three pages" (Playwright)
+name: Test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    # Same image tag as the pinned @playwright/test version (A5).
+    # --ipc=host: Chromium's /dev/shm default (64 MB) crashes the browser in Docker.
+    # The image user is root, so `playwright install --with-deps` can check apt.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
+    timeout-minutes: 15
+    env:
+      # Later pixel tests skip unless this is set, and they only run in this image.
+      PW_DOCKER: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Playwright version matches the container image
+        run: node -e "const v=require('./package.json').devDependencies['@playwright/test']; if(v!=='1.64.1'){console.error('package.json has @playwright/test@'+v+', image is v1.64.1-noble'); process.exit(1)}"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm test
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
